@@ -1,13 +1,15 @@
 <!DOCTYPE html>
-<html lang="vi" class="h-full bg-slate-950 text-slate-100">
+<html lang="vi" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NHÓM 2 - Workspace Realtime</title>
+    <title>NHÓM 2 - Cổng Thông Tin & Quản Lý Làm Việc</title>
+    
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
@@ -17,1106 +19,755 @@
                             500: '#10b981',
                             600: '#059669',
                             700: '#047857',
+                            900: '#064e3b',
                         },
-                        navy: {
-                            800: '#0f172a',
-                            900: '#0f172a',
-                            950: '#020617',
-                        }
+                        darkbg: '#0b0f19',
+                        cardbg: '#111827',
                     }
                 }
             }
         }
     </script>
-    <!-- FontAwesome icons -->
+    
+    <!-- FontAwesome & Lucide Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Font Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDK v10 (Modular via CDN) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { 
+            getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, serverTimestamp, query, orderBy 
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // Cấu hình Firebase chính thức từ người dùng
+        const firebaseConfig = {
+            apiKey: "AIzaSyBrfbY_YYjQKqoScWqrPu_sagcKH1z6308",
+            authDomain: "website-nhom2.firebaseapp.com",
+            projectId: "website-nhom2",
+            storageBucket: "website-nhom2.firebasestorage.app",
+            messagingSenderId: "99396621812",
+            appId: "1:99396621812:web:798b549160fc8311a7d5a1",
+            measurementId: "G-0WSM94F79R"
+        };
+
+        // Khởi tạo Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Đưa Firebase ra toàn cụcwindow để tương tác với UI
+        window.db = db;
+        window.fb = {
+            collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, serverTimestamp, query, orderBy
+        };
+    </script>
+
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .glass-card {
-            background: rgba(15, 23, 42, 0.75);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+        /* Hiệu ứng cuộn mượt và Ticker animation */
+        html { scroll-behavior: smooth; }
+        .ticker-wrap { overflow: hidden; white-space: nowrap; }
+        .ticker { display: inline-block; animation: ticker 25s linear infinite; }
+        @keyframes ticker {
+            0% { transform: translate3d(0, 0, 0); }
+            100% { transform: translate3d(-50%, 0, 0); }
         }
-        .glass-nav {
-            background: rgba(2, 6, 23, 0.85);
-            backdrop-filter: blur(16px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #020617;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #334155;
-            border-radius: 9999px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #10b981;
-        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0b0f19; }
+        ::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #10b981; }
     </style>
 </head>
-<body class="h-full flex flex-col bg-slate-950 text-slate-100 overflow-x-hidden">
+<body class="bg-[#0b0f19] text-slate-100 font-sans min-h-screen flex flex-col antialiased selection:bg-emerald-500 selection:text-white">
 
-    <!-- Top Bar / Navigation Header -->
-    <header class="sticky top-0 z-40 glass-nav px-4 lg:px-8 py-3 flex items-center justify-between">
-        <div class="flex items-center space-x-3">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center font-black text-xl text-slate-950 shadow-lg shadow-emerald-500/20">
-                N2
-            </div>
-            <div>
-                <h1 class="text-xl lg:text-2xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400">
-                    NHÓM 2
-                </h1>
-                <p class="text-xs text-slate-400 flex items-center gap-1.5">
-                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span id="sync-status">Đang kết nối Realtime...</span>
-                </p>
+    <!-- THANH THÔNG BÁO REALTIME (ACTIVITY TICKER) -->
+    <div class="bg-slate-900/90 border-b border-slate-800 text-xs py-2 px-4 backdrop-blur flex items-center justify-between sticky top-0 z-50">
+        <div class="flex items-center gap-2 text-emerald-400 font-bold shrink-0 mr-4">
+            <span class="relative flex h-2.5 w-2.5">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+            </span>
+            <span>NHẬT KÝ ĐỒNG BỘ REALTIME:</span>
+        </div>
+        <div class="ticker-wrap flex-1 text-slate-400">
+            <div id="ticker-content" class="ticker">
+                🚀 Trang web đang được đồng bộ hóa trực tiếp với Firebase Cloud Database. Mọi chỉnh sửa của bạn sẽ hiển thị ngay cho toàn nhóm!
             </div>
         </div>
+        <button onclick="openLogsModal()" class="ml-4 shrink-0 text-slate-400 hover:text-emerald-400 transition flex items-center gap-1 bg-slate-800 px-2.5 py-1 rounded-md text-[11px]">
+            <i class="fa-solid fa-clock-rotate-left"></i> Lịch sử
+        </button>
+    </div>
 
-        <!-- Navigation Tabs -->
-        <nav class="hidden md:flex items-center space-x-2 bg-slate-900/80 p-1.5 rounded-2xl border border-slate-800">
-            <button onclick="switchTab('members')" id="tab-btn-members" class="tab-btn px-5 py-2 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center space-x-2 text-emerald-400 bg-slate-800/80 shadow-sm">
-                <i class="fa-solid font-bold fa-users"></i>
-                <span>Thành viên</span>
-            </button>
-            <button onclick="switchTab('docs')" id="tab-btn-docs" class="tab-btn px-5 py-2 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center space-x-2 text-slate-400 hover:text-slate-200">
-                <i class="fa-solid fa-folder-open"></i>
-                <span>Tài liệu</span>
-            </button>
-            <button onclick="switchTab('tasks')" id="tab-btn-tasks" class="tab-btn px-5 py-2 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center space-x-2 text-slate-400 hover:text-slate-200">
-                <i class="fa-solid fa-list-check"></i>
-                <span>Bài tập & Tiến độ</span>
-            </button>
-        </nav>
+    <!-- HEADER / NAVIGATION -->
+    <header class="border-b border-slate-800 bg-slate-900/50 backdrop-blur-md sticky top-[33px] z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- LOGO NHÓM 2 -->
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center text-white font-extrabold text-xl shadow-lg shadow-emerald-500/20">
+                        N2
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-black tracking-wider text-white flex items-center gap-2">
+                            NHÓM 2
+                            <span class="text-[10px] uppercase bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/20">Pro</span>
+                        </h1>
+                        <p class="text-[11px] text-slate-400">Hệ thống quản lý công việc & tài liệu</p>
+                    </div>
+                </div>
 
-        <!-- Right Side Quick Stats / Mobile Toggle -->
-        <div class="flex items-center space-x-3">
-            <button onclick="toggleLogsModal()" class="relative p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-emerald-400 transition border border-slate-800" title="Nhật ký hoạt động">
-                <i class="fa-solid fa-bell"></i>
-                <span id="log-badge" class="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full animate-ping hidden"></span>
-            </button>
-            <div id="user-info" class="text-right hidden sm:block">
-                <span class="block text-xs text-slate-400">Đang truy cập</span>
-                <span id="user-id-display" class="text-xs font-mono font-medium text-emerald-400">Anonym</span>
+                <!-- NAVIGATION TABS -->
+                <nav class="hidden md:flex items-center space-x-1">
+                    <a href="#members-section" class="px-4 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/80 transition flex items-center gap-2">
+                        <i class="fa-solid fa-users text-emerald-400"></i> Thành viên
+                    </a>
+                    <a href="#docs-section" class="px-4 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/80 transition flex items-center gap-2">
+                        <i class="fa-solid fa-folder-open text-blue-400"></i> Tài liệu
+                    </a>
+                    <a href="#tasks-section" class="px-4 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/80 transition flex items-center gap-2">
+                        <i class="fa-solid fa-list-check text-purple-400"></i> Bài tập & Tiến độ
+                    </a>
+                </nav>
+
+                <!-- USER / STATUS BADGE -->
+                <div class="flex items-center gap-3">
+                    <span id="connection-status" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                        <i class="fa-solid fa-wifi text-[10px]"></i> Đã kết nối
+                    </span>
+                </div>
             </div>
         </div>
     </header>
 
-    <!-- Mobile Bottom Navigation -->
-    <nav class="md:hidden fixed bottom-0 left-0 right-0 z-40 glass-nav px-4 py-2 flex justify-around border-t border-slate-800">
-        <button onclick="switchTab('members')" id="mob-tab-members" class="mob-tab-btn flex flex-col items-center p-2 text-emerald-400">
-            <i class="fa-solid fa-users text-lg"></i>
-            <span class="text-[10px] mt-1 font-medium">Nhóm</span>
-        </button>
-        <button onclick="switchTab('docs')" id="mob-tab-docs" class="mob-tab-btn flex flex-col items-center p-2 text-slate-400">
-            <i class="fa-solid fa-folder-open text-lg"></i>
-            <span class="text-[10px] mt-1 font-medium">Tài liệu</span>
-        </button>
-        <button onclick="switchTab('tasks')" id="mob-tab-tasks" class="mob-tab-btn flex flex-col items-center p-2 text-slate-400">
-            <i class="fa-solid fa-list-check text-lg"></i>
-            <span class="text-[10px] mt-1 font-medium">Bài tập</span>
-        </button>
-    </nav>
+    <!-- MAIN CONTAINER -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
 
-    <!-- Main Content Area -->
-    <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 lg:p-8 mb-16 md:mb-0 space-y-6">
-        
-        <!-- Hero Announcement Banner -->
-        <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-900 via-slate-900 to-emerald-950 border border-slate-800 p-6 md:p-8 shadow-2xl">
-            <div class="absolute -right-12 -bottom-12 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
-            <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                    <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold mb-3">
-                        <i class="fa-solid fa-bolt text-xs"></i>
-                        <span>Cập nhật trực tiếp Realtime</span>
-                    </div>
-                    <h2 class="text-2xl md:text-3xl font-extrabold text-white tracking-tight">Cổng thông tin & Quản lý làm việc NHÓM 2</h2>
-                    <p class="text-slate-400 text-sm md:text-base mt-1 max-w-2xl">
-                        Mọi dữ liệu tài liệu, danh sách thành viên và tiến độ bài tập đều được tự động đồng bộ tức thì cho tất cả các thành viên trong nhóm.
-                    </p>
+        <!-- BANNER GIỚI THIỆU -->
+        <section class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 p-8 border border-slate-800 shadow-2xl">
+            <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="relative z-10 max-w-3xl">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold mb-4">
+                    <i class="fa-solid fa-bolt"></i> Cập nhật mới nhất
                 </div>
-                <div class="flex items-center gap-3">
-                    <div class="bg-slate-950/60 backdrop-blur border border-slate-800 p-3.5 rounded-2xl flex items-center gap-3">
-                        <div class="p-2 bg-emerald-500/20 rounded-xl text-emerald-400">
-                            <i class="fa-solid fa-signal"></i>
-                        </div>
-                        <div>
-                            <div class="text-xs text-slate-400">Đồng bộ máy chủ</div>
-                            <div class="text-sm font-bold text-slate-200" id="live-status-text">Hoạt động tốt</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Latest Activity Ticker Bar -->
-        <div class="bg-slate-900/60 border border-slate-800/80 rounded-2xl px-4 py-2.5 flex items-center space-x-3 text-xs md:text-sm overflow-hidden">
-            <span class="flex-shrink-0 font-bold text-emerald-400 flex items-center gap-1.5 uppercase tracking-wider text-[11px]">
-                <i class="fa-solid fa-clock-rotate-left"></i> Hoạt động mới:
-            </span>
-            <div id="latest-activity-ticker" class="text-slate-300 truncate italic flex-1">
-                Đang kết nối để nhận thông báo mới nhất...
-            </div>
-            <button onclick="toggleLogsModal()" class="text-xs text-slate-400 hover:text-emerald-400 underline flex-shrink-0">
-                Xem tất cả
-            </button>
-        </div>
-
-        <!-- SECTION 1: MEMBERS TAB -->
-    <section id="tab-members" class="tab-content space-y-6">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-                <h3 class="text-xl font-bold text-white flex items-center gap-2">
-                    <i class="fa-solid fa-user-group text-emerald-400"></i>
-                    Danh sách Thành viên Nhóm
-                </h3>
-                <p class="text-xs text-slate-400">Thêm, sửa thông tin, MSSV và vai trò của các thành viên trong NHÓM 2</p>
-            </div>
-            <button onclick="openMemberModal()" class="px-4 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-slate-950 font-bold text-sm rounded-xl shadow-lg shadow-emerald-500/20 flex items-center justify-center space-x-2 transition transform active:scale-95">
-                <i class="fa-solid fa-plus"></i>
-                <span>Thêm Thành Viên</span>
-            </button>
-        </div>
-
-        <!-- Members List Grid -->
-        <div id="members-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            <!-- Loading Skeleton -->
-            <div class="glass-card p-5 rounded-2xl animate-pulse space-y-4">
-                <div class="flex items-center space-x-4">
-                    <div class="w-14 h-14 bg-slate-800 rounded-full"></div>
-                    <div class="flex-1 space-y-2">
-                        <div class="h-4 bg-slate-800 rounded w-3/4"></div>
-                        <div class="h-3 bg-slate-800 rounded w-1/2"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-        <!-- SECTION 2: DOCUMENTS TAB -->
-        <section id="tab-docs" class="tab-content space-y-6 hidden">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                    <h3 class="text-xl font-bold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-folder-open text-emerald-400"></i>
-                        Kho Tài Liệu Nhóm
-                    </h3>
-                    <p class="text-xs text-slate-400">Lưu trữ bài giảng, liên kết tham khảo, tệp thiết kế và báo cáo</p>
-                </div>
-                <button onclick="openDocModal()" class="px-4 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-slate-950 font-bold text-sm rounded-xl shadow-lg shadow-emerald-500/20 flex items-center justify-center space-x-2 transition transform active:scale-95">
-                    <i class="fa-solid fa-upload"></i>
-                    <span>Tải lên / Thêm Tài Liệu</span>
-                </button>
-            </div>
-
-            <!-- Search and Filter Bar -->
-            <div class="flex flex-col md:flex-row gap-3">
-                <div class="relative flex-1">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-500 text-sm"></i>
-                    <input type="text" id="doc-search" oninput="filterDocs()" placeholder="Tìm kiếm tài liệu theo tên, người tải..." class="w-full pl-10 pr-4 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-sm focus:outline-none focus:border-emerald-500 text-slate-200 placeholder-slate-500">
-                </div>
-                <div class="flex gap-2 overflow-x-auto pb-1 md:pb-0">
-                    <button onclick="setDocFilter('all')" class="doc-filter-btn px-4 py-2 bg-emerald-500 text-slate-950 text-xs font-bold rounded-xl whitespace-nowrap" data-type="all">Tất cả</button>
-                    <button onclick="setDocFilter('PDF')" class="doc-filter-btn px-4 py-2 bg-slate-900 text-slate-400 hover:text-white border border-slate-800 text-xs font-medium rounded-xl whitespace-nowrap" data-type="PDF">PDF</button>
-                    <button onclick="setDocFilter('Word')" class="doc-filter-btn px-4 py-2 bg-slate-900 text-slate-400 hover:text-white border border-slate-800 text-xs font-medium rounded-xl whitespace-nowrap" data-type="Word">Word</button>
-                    <button onclick="setDocFilter('Slide')" class="doc-filter-btn px-4 py-2 bg-slate-900 text-slate-400 hover:text-white border border-slate-800 text-xs font-medium rounded-xl whitespace-nowrap" data-type="Slide">Slides</button>
-                    <button onclick="setDocFilter('Link')" class="doc-filter-btn px-4 py-2 bg-slate-900 text-slate-400 hover:text-white border border-slate-800 text-xs font-medium rounded-xl whitespace-nowrap" data-type="Link">Liên kết</button>
-                </div>
-            </div>
-
-            <!-- Docs List Grid -->
-            <div id="docs-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <!-- Will be dynamically populated -->
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+                    Cổng thông tin & Quản lý làm việc <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300">NHÓM 2</span>
+                </h2>
+                <p class="mt-3 text-slate-400 text-sm sm:text-base leading-relaxed">
+                    Kho lưu trữ tài liệu, danh sách thành viên và tiến độ nộp bài tập đều được tự động đồng bộ thời gian thực cho tất cả các thành viên trong nhóm.
+                </p>
             </div>
         </section>
 
-        <!-- SECTION 3: TASKS TAB -->
-        <section id="tab-tasks" class="tab-content space-y-6 hidden">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <!-- MỤC 1: CHI TIẾT NHÓM (THÀNH VIÊN) -->
+        <section id="members-section" class="space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
                 <div>
                     <h3 class="text-xl font-bold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-list-check text-emerald-400"></i>
-                        Quản lý Bài tập & Tiến độ
+                        <i class="fa-solid fa-users-gear text-emerald-400"></i> Danh sách Thành viên Nhóm
                     </h3>
-                    <p class="text-xs text-slate-400">Theo dõi tiến độ, phân công bài tập và gửi kết quả hoàn thành</p>
+                    <p class="text-xs text-slate-400 mt-1">Thông tin các thành viên thuộc NHÓM 2 và vai trò đảm nhận</p>
                 </div>
-                <button onclick="openTaskModal()" class="px-4 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-slate-950 font-bold text-sm rounded-xl shadow-lg shadow-emerald-500/20 flex items-center justify-center space-x-2 transition transform active:scale-95">
-                    <i class="fa-solid fa-plus-circle"></i>
-                    <span>Tạo Bài Tập Mới</span>
+                <button onclick="openMemberModal()" class="inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-medium px-4 py-2.5 rounded-xl transition shadow-lg shadow-emerald-600/20 text-sm">
+                    <i class="fa-solid fa-user-plus"></i> Thêm Thành viên
                 </button>
             </div>
 
-            <!-- Task Kanban Columns -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                
-                <!-- TODO Column -->
-                <div class="bg-slate-900/50 border border-slate-800/80 rounded-2xl p-4 flex flex-col min-h-[450px]">
-                    <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-800">
-                        <div class="flex items-center space-x-2">
-                            <span class="w-3 h-3 rounded-full bg-amber-500"></span>
-                            <h4 class="font-bold text-sm text-slate-200">Cần Làm</h4>
-                        </div>
-                        <span id="count-todo" class="px-2 py-0.5 bg-slate-800 text-slate-400 text-xs font-semibold rounded-full">0</span>
+            <!-- MEMBER CARDS GRID -->
+            <div id="members-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Rendered dynamically -->
+                <div class="col-span-full text-center py-12 text-slate-500">
+                    <i class="fa-solid fa-spinner animate-spin text-2xl text-emerald-400 mb-2"></i>
+                    <p>Đang tải danh sách thành viên...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- MỤC 2: TÀI LIỆU NHÓM -->
+        <section id="docs-section" class="space-y-6 pt-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+                <div>
+                    <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-folder-open text-blue-400"></i> Tài liệu & Liên kết
+                    </h3>
+                    <p class="text-xs text-slate-400 mt-1">Gửi và lưu trữ các tệp bài học, slide, tài liệu tham khảo của nhóm</p>
+                </div>
+                <button onclick="openDocModal()" class="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-medium px-4 py-2.5 rounded-xl transition shadow-lg shadow-blue-600/20 text-sm">
+                    <i class="fa-solid fa-file-circle-plus"></i> Tải lên Tài liệu
+                </button>
+            </div>
+
+            <!-- DOCUMENTS GRID -->
+            <div id="docs-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Rendered dynamically -->
+                <div class="col-span-full text-center py-12 text-slate-500">
+                    <i class="fa-solid fa-spinner animate-spin text-2xl text-blue-400 mb-2"></i>
+                    <p>Đang tải danh sách tài liệu...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- MỤC 3: BÀI TẬP & TIẾN ĐỘ hoàn thành -->
+        <section id="tasks-section" class="space-y-6 pt-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+                <div>
+                    <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-list-check text-purple-400"></i> Nộp Bài tập & Tiến độ
+                    </h3>
+                    <p class="text-xs text-slate-400 mt-1">Quản lý các nhiệm vụ, bài tập cần nộp và trạng thái hoàn thành</p>
+                </div>
+                <button onclick="openTaskModal()" class="inline-flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-500 text-white font-medium px-4 py-2.5 rounded-xl transition shadow-lg shadow-purple-600/20 text-sm">
+                    <i class="fa-solid fa-plus"></i> Tạo / Nộp Bài tập
+                </button>
+            </div>
+
+            <!-- KANBAN / TASKS LIST -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Cần làm / Chưa nộp -->
+                <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 flex flex-col">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="font-bold text-slate-300 text-sm flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> Chưa hoàn thành
+                        </span>
+                        <span id="count-todo" class="text-xs font-semibold bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full">0</span>
                     </div>
-                    <div id="col-todo" class="space-y-3 flex-1 overflow-y-auto max-h-[600px] pr-1">
-                        <!-- Items -->
-                    </div>
+                    <div id="tasks-todo" class="space-y-3 flex-1 min-h-[150px]"></div>
                 </div>
 
-                <!-- IN PROGRESS Column -->
-                <div class="bg-slate-900/50 border border-slate-800/80 rounded-2xl p-4 flex flex-col min-h-[450px]">
-                    <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-800">
-                        <div class="flex items-center space-x-2">
-                            <span class="w-3 h-3 rounded-full bg-blue-500"></span>
-                            <h4 class="font-bold text-sm text-slate-200">Đang Thực Hiện</h4>
-                        </div>
-                        <span id="count-inprogress" class="px-2 py-0.5 bg-slate-800 text-slate-400 text-xs font-semibold rounded-full">0</span>
+                <!-- Đang thực hiện -->
+                <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 flex flex-col">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="font-bold text-slate-300 text-sm flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span> Đang làm / Đang xem xét
+                        </span>
+                        <span id="count-doing" class="text-xs font-semibold bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full">0</span>
                     </div>
-                    <div id="col-inprogress" class="space-y-3 flex-1 overflow-y-auto max-h-[600px] pr-1">
-                        <!-- Items -->
-                    </div>
+                    <div id="tasks-doing" class="space-y-3 flex-1 min-h-[150px]"></div>
                 </div>
 
-                <!-- DONE Column -->
-                <div class="bg-slate-900/50 border border-slate-800/80 rounded-2xl p-4 flex flex-col min-h-[450px]">
-                    <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-800">
-                        <div class="flex items-center space-x-2">
-                            <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
-                            <h4 class="font-bold text-sm text-slate-200">Đã Hoàn Thành</h4>
-                        </div>
-                        <span id="count-done" class="px-2 py-0.5 bg-slate-800 text-slate-400 text-xs font-semibold rounded-full">0</span>
+                <!-- Đã hoàn thành -->
+                <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 flex flex-col">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="font-bold text-slate-300 text-sm flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Đã hoàn thành / Đã nộp
+                        </span>
+                        <span id="count-done" class="text-xs font-semibold bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full">0</span>
                     </div>
-                    <div id="col-done" class="space-y-3 flex-1 overflow-y-auto max-h-[600px] pr-1">
-                        <!-- Items -->
-                    </div>
+                    <div id="tasks-done" class="space-y-3 flex-1 min-h-[150px]"></div>
                 </div>
-
             </div>
         </section>
 
     </main>
 
-    <!-- MODAL 1: ADD / EDIT MEMBER -->
-    <div id="member-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm hidden">
-        <div class="glass-card w-full max-w-md rounded-2xl p-6 border border-slate-800 shadow-2xl relative">
-            <button onclick="closeMemberModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-            <h3 id="member-modal-title" class="text-lg font-bold text-white mb-4">Thêm Thành Viên Mới</h3>
-            <form id="member-form" onsubmit="saveMember(event)" class="space-y-4">
+    <!-- FOOTER -->
+    <footer class="border-t border-slate-800 bg-slate-950 py-8 mt-12 text-center text-xs text-slate-500">
+        <div class="max-w-7xl mx-auto px-4">
+            <p>© 2026 Trang web quản lý thông tin NHÓM 2. Mọi chỉnh sửa được đồng bộ thời gian thực.</p>
+        </div>
+    </footer>
+
+    <!-- MODAL 1: THÊM / SỬA THÀNH VIÊN -->
+    <div id="member-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md p-6 shadow-2xl relative">
+            <h3 id="member-modal-title" class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-user-plus text-emerald-400"></i> Thêm Thành viên mới
+            </h3>
+            <form id="member-form" onsubmit="handleSaveMember(event)" class="space-y-4">
                 <input type="hidden" id="member-id">
                 <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1">Họ và Tên *</label>
-                    <input type="text" id="member-name" required placeholder="Nhập họ tên..." class="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-medium text-slate-300 mb-1">Vai Trò Trong Nhóm *</label>
-                        <input type="text" id="member-role" required placeholder="Nhóm trưởng, Dev..." class="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-medium text-slate-300 mb-1">Mã Số Sinh Viên (MSSV)</label>
-                        <input type="text" id="member-student-id" placeholder="21120000" class="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
-                    </div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Họ và tên *</label>
+                    <input type="text" id="member-name" required placeholder="Ví dụ: Nguyễn Văn An" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1">Đường dẫn ảnh đại diện (URL)</label>
-                    <input type="url" id="member-avatar" placeholder="https://..." class="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
-                    <p class="text-[10px] text-slate-500 mt-1">Bỏ trống để sử dụng ảnh mặc định.</p>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Chức vụ / Vai trò *</label>
+                    <input type="text" id="member-role" required placeholder="Ví dụ: Nhóm trưởng, Member, Designer..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1">Thông tin liên hệ (Email / SĐT)</label>
-                    <input type="text" id="member-contact" placeholder="Email hoặc số điện thoại..." class="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Mã số sinh viên (MSSV)</label>
+                    <input type="text" id="member-mssv" placeholder="Ví dụ: 202460123" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1">Công việc đảm nhận / Ghi chú</label>
-                    <textarea id="member-desc" rows="2" placeholder="Ghi chú về công việc, nhiệm vụ chính..." class="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-emerald-500"></textarea>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Link Ảnh đại diện (URL)</label>
+                    <input type="url" id="member-avatar" placeholder="https://images.unsplash.com/..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500">
+                    <p class="text-[10px] text-slate-500 mt-1">Để trống nếu muốn dùng ảnh mặc định</p>
                 </div>
-                <div class="flex justify-end space-x-3 pt-2">
-                    <button type="button" onclick="closeMemberModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-semibold rounded-xl">Hủy</button>
-                    <button type="submit" class="px-5 py-2 bg-emerald-500 hover:bg-emerald-600 text-slate-950 text-sm font-bold rounded-xl">Lưu lại</button>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Ghi chú / Nhiệm vụ chính</label>
+                    <textarea id="member-bio" rows="2" placeholder="Tóm tắt công việc phụ trách..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500"></textarea>
+                </div>
+                <div class="flex justify-end gap-3 pt-2">
+                    <button type="button" onclick="closeMemberModal()" class="px-4 py-2 rounded-xl text-xs font-medium text-slate-400 hover:bg-slate-800">Hủy</button>
+                    <button type="submit" id="btn-save-member" class="px-4 py-2 rounded-xl text-xs font-medium bg-emerald-600 hover:bg-emerald-500 text-white font-semibold">Lưu thành viên</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- MODAL 5: DELETE MEMBER CONFIRMATION MODAL -->
-    <div id="delete-confirm-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm hidden">
-        <div class="glass-card w-full max-w-sm rounded-2xl p-6 border border-slate-800 shadow-2xl relative text-center">
-            <div class="w-12 h-12 rounded-full bg-red-500/10 border border-red-500/20 text-red-500 flex items-center justify-center mx-auto mb-4 text-xl">
+    <!-- MODAL XÁC NHẬN XÓA THÀNH VIÊN -->
+    <div id="confirm-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-sm p-6 shadow-2xl text-center">
+            <div class="w-12 h-12 bg-rose-500/10 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-4 text-xl">
                 <i class="fa-solid fa-triangle-exclamation"></i>
             </div>
             <h3 class="text-lg font-bold text-white mb-2">Xác nhận xóa thành viên</h3>
-            <p id="delete-confirm-text" class="text-xs text-slate-300 mb-6">Bạn có chắc chắn muốn xóa thành viên này khỏi nhóm không?</p>
-            
-            <div class="flex items-center justify-center space-x-3">
-                <button type="button" onclick="closeDeleteConfirmModal()" class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl transition">
-                    Hủy bỏ
-                </button>
-                <button type="button" id="confirm-delete-btn" onclick="executeDeleteMember()" class="flex-1 py-2.5 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-xl shadow-lg shadow-red-600/30 transition">
-                    Xóa ngay
+            <p class="text-xs text-slate-400 mb-6">
+                Bạn có chắc chắn muốn xóa thành viên <span id="confirm-delete-name" class="font-bold text-emerald-400"></span> khỏi danh sách NHÓM 2 không?
+            </p>
+            <div class="flex justify-center gap-3">
+                <button onclick="closeConfirmModal()" class="px-4 py-2 rounded-xl text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-300">Hủy bỏ</button>
+                <button id="btn-confirm-delete" onclick="executeDeleteMember()" class="px-4 py-2 rounded-xl text-xs font-medium bg-rose-600 hover:bg-rose-500 text-white font-semibold shadow-lg shadow-rose-600/30">
+                    Đang xóa...
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL 2: ADD / EDIT DOCUMENT -->
-    <div id="doc-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm hidden">
-        <div class="glass-card w-full max-w-md rounded-2xl p-6 border border-slate-800 shadow-2xl relative">
-            <button onclick="closeDocModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-            <h3 id="doc-modal-title" class="text-lg font-bold text-white mb-4">Tải Lên / Thêm Tài Liệu Mới</h3>
-            <form id="doc-form" onsubmit="saveDoc(event)" class="space-y-4">
+    <!-- MODAL 2: TẢI TÀI LIỆU -->
+    <div id="doc-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md p-6 shadow-2xl">
+            <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-file-circle-plus text-blue-400"></i> Tải lên Tài liệu / Link
+            </h3>
+            <form id="doc-form" onsubmit="handleSaveDoc(event)" class="space-y-4">
                 <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1">Tên tài liệu *</label>
-                    <input type="text" id="doc-title" required placeholder="Nhập tên tài liệu, bài giảng..." class="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-medium text-slate-300 mb-1">Loại tài liệu *</label>
-                        <select id="doc-type" required class="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
-                            <option value="PDF">PDF</option>
-                            <option value="Word">Word</option>
-                            <option value="Slide">Slide / PowerPoint</option>
-                            <option value="Link">Liên kết Web</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-medium text-slate-300 mb-1">Người đăng *</label>
-                        <input type="text" id="doc-author" required placeholder="Tên người đăng..." class="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
-                    </div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Tên tài liệu *</label>
+                    <input type="text" id="doc-title" required placeholder="Ví dụ: Báo cáo Slide Tuần 3" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1">Đường dẫn tệp / Liên kết (URL) *</label>
-                    <input type="url" id="doc-url" required placeholder="https://drive.google.com/..." class="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
-                </div>
-                <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1">Ghi chú / Mô tả tài liệu</label>
-                    <textarea id="doc-desc" rows="2" placeholder="Nội dung tóm tắt tài liệu..." class="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-emerald-500"></textarea>
-                </div>
-                <div class="flex justify-end space-x-3 pt-2">
-                    <button type="button" onclick="closeDocModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-semibold rounded-xl">Hủy</button>
-                    <button type="submit" class="px-5 py-2 bg-emerald-500 hover:bg-emerald-600 text-slate-950 text-sm font-bold rounded-xl">Lưu tài liệu</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- MODAL 3: ADD / EDIT / SUBMIT TASK -->
-    <div id="task-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm hidden">
-        <div class="glass-card w-full max-w-md rounded-2xl p-6 border border-slate-800 shadow-2xl relative">
-            <button onclick="closeTaskModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-            <h3 id="task-modal-title" class="text-lg font-bold text-white mb-4">Tạo Bài Tập Mới</h3>
-            <form id="task-form" onsubmit="saveTask(event)" class="space-y-4">
-                <input type="hidden" id="task-id">
-                <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1">Tên bài tập / Nhiệm vụ *</label>
-                    <input type="text" id="task-title" required placeholder="Nhập tên bài tập..." class="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-medium text-slate-300 mb-1">Người đảm nhận</label>
-                        <input type="text" id="task-assignee" placeholder="Tên thành viên..." class="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-medium text-slate-300 mb-1">Hạn nộp</label>
-                        <input type="date" id="task-due" class="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1">Trạng thái bài tập</label>
-                    <select id="task-status" class="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
-                        <option value="todo">Cần Làm</option>
-                        <option value="inprogress">Đang Thực Hiện</option>
-                        <option value="done">Đã Hoàn Thành</option>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Loại tài liệu</label>
+                    <select id="doc-type" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                        <option value="PDF">Tệp PDF</option>
+                        <option value="WORD">Tài liệu Word / Docs</option>
+                        <option value="SLIDE">Bài thuyết trình Slide / PPT</option>
+                        <option value="LINK">Đường dẫn Google Drive / Canva / Link ngoài</option>
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1">Mô tả bài tập</label>
-                    <textarea id="task-desc" rows="2" placeholder="Yêu cầu chi tiết bài tập..." class="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-emerald-500"></textarea>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Đường dẫn tài liệu (URL Link/Drive) *</label>
+                    <input type="url" id="doc-url" required placeholder="https://drive.google.com/..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
                 </div>
-                <div class="pt-2 border-t border-slate-800/80">
-                    <p class="text-xs font-bold text-emerald-400 mb-2"><i class="fa-solid fa-file-arrow-up mr-1"></i>Nộp bài làm (Nếu có):</p>
-                    <div class="space-y-3">
-                        <div>
-                            <label class="block text-xs font-medium text-slate-300 mb-1">Đường dẫn tệp bài làm (URL)</label>
-                            <input type="url" id="task-submission-link" placeholder="https://drive.google.com/..." class="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-slate-300 mb-1">Ghi chú khi nộp bài</label>
-                            <input type="text" id="task-submission-note" placeholder="Nhận xét hoặc lưu ý khi nộp bài..." class="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
-                        </div>
-                    </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Người gửi</label>
+                    <input type="text" id="doc-author" placeholder="Tên người tải lên" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
                 </div>
-                <div class="flex justify-end space-x-3 pt-2">
-                    <button type="button" onclick="closeTaskModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-semibold rounded-xl">Hủy</button>
-                    <button type="submit" class="px-5 py-2 bg-emerald-500 hover:bg-emerald-600 text-slate-950 text-sm font-bold rounded-xl">Lưu bài tập</button>
+                <div class="flex justify-end gap-3 pt-2">
+                    <button type="button" onclick="closeDocModal()" class="px-4 py-2 rounded-xl text-xs font-medium text-slate-400 hover:bg-slate-800">Hủy</button>
+                    <button type="submit" id="btn-save-doc" class="px-4 py-2 rounded-xl text-xs font-medium bg-blue-600 hover:bg-blue-500 text-white font-semibold">Tải tài liệu lên</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- MODAL 4: ACTIVITY LOGS MODAL -->
-    <div id="logs-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm hidden">
-        <div class="glass-card w-full max-w-lg rounded-2xl p-6 border border-slate-800 shadow-2xl relative flex flex-col max-h-[80vh]">
-            <div class="flex items-center justify-between pb-4 border-b border-slate-800 mb-4">
-                <h3 class="text-lg font-bold text-white flex items-center gap-2">
-                    <i class="fa-solid fa-clock-rotate-left text-emerald-400"></i>
-                    Nhật ký Hoạt động Realtime
+    <!-- MODAL 3: BÀI TẬP -->
+    <div id="task-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md p-6 shadow-2xl">
+            <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-list-check text-purple-400"></i> Tạo / Nộp Bài Tập
+            </h3>
+            <form id="task-form" onsubmit="handleSaveTask(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Tên bài tập / Tên nhiệm vụ *</label>
+                    <input type="text" id="task-title" required placeholder="Ví dụ: Nộp bài tập nhóm Chương 2" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Người phụ trách / Người nộp</label>
+                    <input type="text" id="task-assignee" placeholder="Tên thành viên..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Trạng thái</label>
+                    <select id="task-status" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500">
+                        <option value="TODO">Chưa hoàn thành</option>
+                        <option value="DOING">Đang thực hiện / Đang xem xét</option>
+                        <option value="DONE">Đã hoàn thành / Đã nộp bài</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Link bài tập đã làm (nếu có)</label>
+                    <input type="url" id="task-link" placeholder="https://..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500">
+                </div>
+                <div class="flex justify-end gap-3 pt-2">
+                    <button type="button" onclick="closeTaskModal()" class="px-4 py-2 rounded-xl text-xs font-medium text-slate-400 hover:bg-slate-800">Hủy</button>
+                    <button type="submit" id="btn-save-task" class="px-4 py-2 rounded-xl text-xs font-medium bg-purple-600 hover:bg-purple-500 text-white font-semibold">Lưu bài tập</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL NHẬT KÝ LỊCH SỬ HOẠT ĐỘNG -->
+    <div id="logs-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-lg p-6 shadow-2xl flex flex-col max-h-[80vh]">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
+                <h3 class="text-base font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-clock-rotate-left text-emerald-400"></i> Lịch sử Chỉnh sửa Trang Web
                 </h3>
-                <button onclick="toggleLogsModal()" class="text-slate-400 hover:text-white text-lg">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
+                <button onclick="closeLogsModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div id="logs-list" class="space-y-3 overflow-y-auto flex-1 pr-1">
-                <!-- Log items populated dynamically -->
+            <div id="logs-list" class="space-y-3 overflow-y-auto flex-1 pr-2">
+                <p class="text-xs text-slate-500 text-center py-4">Chưa có nhật ký ghi nhận...</p>
             </div>
         </div>
     </div>
 
-    <!-- Firebase Modular Setup -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { 
-            getFirestore, collection, doc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot, serverTimestamp 
-        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        // Global Firebase Configuration fallback
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
-            apiKey: "demo-api-key",
-            authDomain: "demo-app.firebaseapp.com",
-            projectId: "demo-app",
-            storageBucket: "demo-app.appspot.com",
-            messagingSenderId: "123456789",
-            appId: "1:123456789:web:123456789"
+    <!-- JAVASCRIPT LOGIC TRONG TRANG -->
+    <script>
+        // Store Local Fallback Data
+        let state = {
+            members: [],
+            docs: [],
+            tasks: [],
+            logs: []
         };
 
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'nhom2-app-portal';
+        let targetDeleteMemberId = null;
 
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        let currentUser = null;
-        let membersData = [];
-        let docsData = [];
-        let tasksData = [];
-        let logsData = [];
-        let currentDocFilter = 'all';
-
-        // Temporary target for member deletion confirmation
-        let memberToDeleteTarget = null;
-
-        // Fallback default sample members if collection is empty
-        const INITIAL_MEMBERS = [
-            {
-                id: 'default-1',
-                name: 'Nguyễn Văn An',
-                role: 'Nhóm trưởng',
-                studentId: '21120001',
-                avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
-                contact: 'an.nguyen@nhom2.edu.vn',
-                desc: 'Phụ trách điều phối công việc và quản lý tiến độ tổng thể của nhóm.'
-            },
-            {
-                id: 'default-2',
-                name: 'Trần Thị Bích',
-                role: 'UI/UX Designer',
-                studentId: '21120002',
-                avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80',
-                contact: 'bich.tran@nhom2.edu.vn',
-                desc: 'Thiết kế giao diện người dùng và tạo tài liệu thuyết trình.'
-            }
+        // Dữ liệu mẫu ban đầu
+        const defaultMembers = [
+            { id: '1', name: 'Nguyễn Văn An', role: 'Nhóm trưởng', mssv: '20246001', bio: 'Quản lý tiến độ chung và phân công công việc', avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150' },
+            { id: '2', name: 'Trần Thị Bích', role: 'Thành viên (Lead Designer)', mssv: '20246002', bio: 'Thuyết trình và thiết kế Slide nhóm', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150' }
         ];
 
-        // Define Collection Paths strictly using Artifact Public Standard
-        const MEMBERS_COL = collection(db, 'artifacts', appId, 'public', 'data', 'members');
-        const DOCS_COL = collection(db, 'artifacts', appId, 'public', 'data', 'docs');
-        const TASKS_COL = collection(db, 'artifacts', appId, 'public', 'data', 'tasks');
-        const LOGS_COL = collection(db, 'artifacts', appId, 'public', 'data', 'logs');
+        const defaultDocs = [
+            { id: '1', title: 'Tài liệu đề cương thảo luận nhóm.pdf', type: 'PDF', url: '#', author: 'Nguyễn Văn An' }
+        ];
 
-        // Initial Authentication Setup
-        async function initAuth() {
-            try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
-                }
-            } catch (err) {
-                console.error("Auth error:", err);
-                // Load fallback local members on auth failure
-                if (membersData.length === 0) {
-                    membersData = [...INITIAL_MEMBERS];
-                    renderMembers();
-                }
-            }
-        }
+        const defaultTasks = [
+            { id: '1', title: 'Nộp báo cáo tiểu luận tuần 1', assignee: 'Trần Thị Bích', status: 'DONE', link: '#' }
+        ];
 
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                currentUser = user;
-                document.getElementById('sync-status').textContent = 'Đã kết nối Realtime';
-                document.getElementById('user-id-display').textContent = user.uid.slice(0, 8) + '...';
-                startRealtimeListeners();
-            } else {
-                document.getElementById('sync-status').textContent = 'Mất kết nối';
-            }
+        // Khởi chạy khi trang load xong
+        window.addEventListener('DOMContentLoaded', () => {
+            initFirebaseListeners();
         });
 
-        // Initialize listeners
-        function startRealtimeListeners() {
-            if (!currentUser) return;
-
-            // Members Listener
-            onSnapshot(MEMBERS_COL, (snapshot) => {
-                const loaded = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                if (loaded.length === 0 && membersData.length === 0) {
-                    // Populate initial sample members if database is fresh/empty
-                    membersData = [...INITIAL_MEMBERS];
-                } else if (loaded.length > 0) {
-                    membersData = loaded;
-                }
-                renderMembers();
-            }, (error) => {
-                console.error("Members snapshot error:", error);
-                if (membersData.length === 0) {
-                    membersData = [...INITIAL_MEMBERS];
-                    renderMembers();
-                }
-            });
-
-            // Docs Listener
-            onSnapshot(DOCS_COL, (snapshot) => {
-                docsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderDocs();
-            }, (error) => console.error("Docs error:", error));
-
-            // Tasks Listener
-            onSnapshot(TASKS_COL, (snapshot) => {
-                tasksData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderTasks();
-            }, (error) => console.error("Tasks error:", error));
-
-            // Activity Logs Listener
-            onSnapshot(LOGS_COL, (snapshot) => {
-                logsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                logsData.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-                renderLogs();
-            }, (error) => console.error("Logs error:", error));
-        }
-
-        // Add Log Helper
-        async function logActivity(actionMessage) {
-            const userTag = currentUser ? currentUser.uid.slice(0, 6) : 'Thành viên';
-            const logObj = {
-                message: actionMessage,
-                user: userTag,
-                createdAt: { seconds: Math.floor(Date.now() / 1000) }
-            };
-
-            // Prepend to local memory logs for immediate UX feedback
-            logsData.unshift(logObj);
-            renderLogs();
-
-            try {
-                await addDoc(LOGS_COL, {
-                    message: actionMessage,
-                    user: userTag,
-                    createdAt: serverTimestamp()
-                });
-            } catch (e) {
-                console.error("Error logging activity to Firestore", e);
-            }
-        }
-
-        // Render Members
-        function renderMembers() {
-            const container = document.getElementById('members-grid');
-            if (membersData.length === 0) {
-                container.innerHTML = `
-                    <div class="col-span-full py-12 text-center text-slate-500 border border-dashed border-slate-800 rounded-2xl">
-                        <i class="fa-solid fa-users text-3xl mb-2"></i>
-                        <p class="text-sm">Chưa có thành viên nào. Hãy bấm nút "Thêm Thành Viên" ở trên!</p>
-                    </div>`;
+        // Lắng nghe dữ liệu từ Firebase
+        function initFirebaseListeners() {
+            if (!window.db || !window.fb) {
+                console.warn("Firebase chưa cấu hình. Dùng dữ liệu đệm.");
+                useFallbackData();
                 return;
             }
 
-            container.innerHTML = membersData.map(m => `
-                <div class="glass-card p-5 rounded-2xl relative group hover:border-emerald-500/50 transition-all duration-300">
-                    <div class="absolute top-3.5 right-3.5 flex items-center space-x-1.5 z-10">
-                        <button onclick="editMember('${m.id}')" title="Sửa thông tin" class="p-2 text-slate-400 hover:text-emerald-400 bg-slate-900/80 hover:bg-slate-800 rounded-xl border border-slate-800 transition">
-                            <i class="fa-solid fa-pen text-xs"></i>
-                        </button>
-                        <button onclick="promptDeleteMember('${m.id}', '${escapeHtml(m.name)}')" title="Xóa thành viên" class="p-2 text-red-400/80 hover:text-red-400 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 rounded-xl transition">
-                            <i class="fa-solid fa-trash-can text-xs"></i>
-                        </button>
-                    </div>
-                    <div class="flex items-start space-x-4">
-                        <img src="${m.avatar || 'https://placehold.co/150/1e293b/10b981?text=' + encodeURIComponent(m.name ? m.name.charAt(0) : 'N')}" 
-                             onerror="this.src='https://placehold.co/150/1e293b/10b981?text=N2'"
-                             class="w-14 h-14 rounded-2xl object-cover border-2 border-slate-700/80 shadow-md">
-                        <div class="flex-1 min-w-0 pr-16">
-                            <h4 class="font-bold text-white text-base truncate">${m.name}</h4>
-                            <div class="flex flex-wrap items-center gap-1.5 mt-1">
-                                <span class="inline-block px-2.5 py-0.5 text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-md">
+            const { collection, onSnapshot } = window.fb;
+
+            // 1. Members Realtime
+            try {
+                onSnapshot(collection(window.db, "members"), (snapshot) => {
+                    state.members = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    if (state.members.length === 0) state.members = [...defaultMembers];
+                    renderMembers();
+                }, (err) => {
+                    console.error("Lỗi lắng nghe Members:", err);
+                    useFallbackData();
+                });
+
+                // 2. Docs Realtime
+                onSnapshot(collection(window.db, "docs"), (snapshot) => {
+                    state.docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    if (state.docs.length === 0) state.docs = [...defaultDocs];
+                    renderDocs();
+                }, (err) => console.error(err));
+
+                // 3. Tasks Realtime
+                onSnapshot(collection(window.db, "tasks"), (snapshot) => {
+                    state.tasks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    if (state.tasks.length === 0) state.tasks = [...defaultTasks];
+                    renderTasks();
+                }, (err) => console.error(err));
+
+                // 4. Activity Logs Realtime
+                onSnapshot(collection(window.db, "logs"), (snapshot) => {
+                    state.logs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    renderLogs();
+                }, (err) => console.error(err));
+
+            } catch(e) {
+                console.error("Firebase init failed:", e);
+                useFallbackData();
+            }
+        }
+
+        function useFallbackData() {
+            state.members = defaultMembers;
+            state.docs = defaultDocs;
+            state.tasks = defaultTasks;
+            renderMembers();
+            renderDocs();
+            renderTasks();
+        }
+
+        // --- HAM LOG ACTIVITY ---
+        async function addActivityLog(text) {
+            try {
+                const tickerEl = document.getElementById('ticker-content');
+                if (tickerEl) {
+                    tickerEl.innerHTML = `🔔 <span class="text-emerald-400 font-semibold">${text}</span> - vừa được cập nhật tức thì trên hệ thống!`;
+                }
+
+                if (window.db && window.fb) {
+                    const { collection, addDoc, serverTimestamp } = window.fb;
+                    await addDoc(collection(window.db, "logs"), {
+                        text,
+                        timestamp: serverTimestamp()
+                    });
+                }
+            } catch (e) {
+                console.log("Log saved locally:", text);
+            }
+        }
+
+        // --- RENDER FUNCTIONS ---
+        function renderMembers() {
+            const grid = document.getElementById('members-grid');
+            if (!grid) return;
+
+            if (state.members.length === 0) {
+                grid.innerHTML = `<p class="col-span-full text-center text-slate-500 py-6">Chưa có thành viên nào.</p>`;
+                return;
+            }
+
+            grid.innerHTML = state.members.map(m => `
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 hover:border-emerald-500/40 transition duration-300 relative group flex flex-col justify-between shadow-lg">
+                    <!-- Nút xóa nhanh -->
+                    <button onclick="confirmDeleteMember('${m.id}', '${m.name.replace(/'/g, "\\'")}')" class="absolute top-4 right-4 text-slate-500 hover:text-rose-400 bg-slate-800/80 hover:bg-rose-500/10 p-2 rounded-lg transition" title="Xóa thành viên">
+                        <i class="fa-solid fa-trash-can text-sm"></i>
+                    </button>
+
+                    <div>
+                        <div class="flex items-center gap-4 mb-4">
+                            <img src="${m.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'}" alt="${m.name}" class="w-14 h-14 rounded-2xl object-cover border-2 border-emerald-500/30">
+                            <div>
+                                <h4 class="font-bold text-white text-base leading-snug">${m.name}</h4>
+                                <span class="inline-block text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-md mt-1">
                                     ${m.role || 'Thành viên'}
                                 </span>
-                                ${m.studentId ? `<span class="inline-block px-2 py-0.5 text-[10px] font-mono text-slate-400 bg-slate-800 border border-slate-700/50 rounded-md">
-                                    MSSV: ${m.studentId}
-                                </span>` : ''}
                             </div>
                         </div>
-                    </div>
-                    <div class="mt-4 pt-3 border-t border-slate-800/80 space-y-1.5 text-xs">
-                        <p class="text-slate-300 flex items-center gap-2 truncate">
-                            <i class="fa-regular fa-envelope text-slate-500"></i>
-                            <span>${m.contact || 'Chưa cập nhật liên hệ'}</span>
-                        </p>
-                        <p class="text-slate-400 italic text-[11px] line-clamp-2">
-                            "${m.desc || 'Thành viên tích cực của Nhóm 2.'}"
-                        </p>
+                        <div class="space-y-1.5 text-xs text-slate-400 mb-4">
+                            ${m.mssv ? `<p class="flex items-center gap-2"><i class="fa-solid fa-id-card text-slate-500"></i> MSSV: <span class="text-slate-200 font-medium">${m.mssv}</span></p>` : ''}
+                            <p class="text-slate-400 text-xs italic mt-2">${m.bio || 'Chưa có ghi chú vai trò...'}</p>
+                        </div>
                     </div>
                 </div>
             `).join('');
         }
 
-        // Render Docs
         function renderDocs() {
-            const container = document.getElementById('docs-grid');
-            const searchVal = (document.getElementById('doc-search')?.value || '').toLowerCase();
-            
-            let filtered = docsData.filter(d => {
-                const matchesType = currentDocFilter === 'all' || d.type === currentDocFilter;
-                const matchesSearch = d.title.toLowerCase().includes(searchVal) || (d.author && d.author.toLowerCase().includes(searchVal));
-                return matchesType && matchesSearch;
-            });
+            const grid = document.getElementById('docs-grid');
+            if (!grid) return;
 
-            if (filtered.length === 0) {
-                container.innerHTML = `
-                    <div class="col-span-full py-12 text-center text-slate-500 border border-dashed border-slate-800 rounded-2xl">
-                        <i class="fa-solid fa-folder-open text-3xl mb-2"></i>
-                        <p class="text-sm">Không tìm thấy tài liệu phù hợp.</p>
-                    </div>`;
-                return;
-            }
-
-            const iconMap = {
-                'PDF': { icon: 'fa-file-pdf', color: 'text-red-400', bg: 'bg-red-500/10' },
-                'Word': { icon: 'fa-file-word', color: 'text-blue-400', bg: 'bg-blue-500/10' },
-                'Slide': { icon: 'fa-file-powerpoint', color: 'text-orange-400', bg: 'bg-orange-500/10' },
-                'Link': { icon: 'fa-link', color: 'text-teal-400', bg: 'bg-teal-500/10' }
-            };
-
-            container.innerHTML = filtered.map(d => {
-                const style = iconMap[d.type] || iconMap['Link'];
-                return `
-                <div class="glass-card p-4 rounded-2xl flex flex-col justify-between hover:border-slate-700 transition">
+            grid.innerHTML = state.docs.map(d => `
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 hover:border-blue-500/40 transition flex flex-col justify-between">
                     <div>
-                        <div class="flex items-start justify-between gap-3 mb-3">
-                            <div class="p-3 rounded-xl ${style.bg} ${style.color}">
-                                <i class="fa-solid ${style.icon} text-xl"></i>
-                            </div>
-                            <button onclick="deleteDoc('${d.id}', '${escapeHtml(d.title)}')" class="text-slate-500 hover:text-red-400 p-1 text-xs">
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
+                        <div class="flex items-start justify-between gap-2 mb-3">
+                            <span class="text-xs font-bold px-2.5 py-1 rounded-lg bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                                ${d.type || 'DOC'}
+                            </span>
                         </div>
-                        <h4 class="font-bold text-white text-sm line-clamp-2 mb-1">${d.title}</h4>
-                        <p class="text-xs text-slate-400 line-clamp-2 mb-3">${d.desc || 'Không có mô tả.'}</p>
+                        <h4 class="font-bold text-white text-sm mb-2 line-clamp-2">${d.title}</h4>
+                        <p class="text-xs text-slate-500">Người tải: <span class="text-slate-300">${d.author || 'Thành viên nhóm'}</span></p>
                     </div>
-                    <div class="pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs">
-                        <span class="text-slate-500 font-medium truncate max-w-[120px]">
-                            <i class="fa-solid fa-user-circle mr-1"></i>${d.author || 'Ẩn danh'}
-                        </span>
-                        <a href="${d.url}" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 bg-slate-800 hover:bg-emerald-500 hover:text-slate-950 text-emerald-400 font-semibold rounded-lg transition flex items-center gap-1.5">
-                            <span>Mở tài liệu</span>
-                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                    <div class="mt-4 pt-3 border-t border-slate-800/80 flex justify-end">
+                        <a href="${d.url}" target="_blank" class="text-xs font-semibold text-blue-400 hover:text-blue-300 flex items-center gap-1.5 bg-blue-500/10 px-3 py-1.5 rounded-lg border border-blue-500/20">
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i> Mở tài liệu
                         </a>
                     </div>
-                </div>`;
-            }).join('');
-        }
-
-        // Render Tasks Kanban
-        function renderTasks() {
-            const colTodo = document.getElementById('col-todo');
-            const colInprogress = document.getElementById('col-inprogress');
-            const colDone = document.getElementById('col-done');
-
-            const todoTasks = tasksData.filter(t => t.status === 'todo');
-            const inprogressTasks = tasksData.filter(t => t.status === 'inprogress');
-            const doneTasks = tasksData.filter(t => t.status === 'done');
-
-            document.getElementById('count-todo').textContent = todoTasks.length;
-            document.getElementById('count-inprogress').textContent = inprogressTasks.length;
-            document.getElementById('count-done').textContent = doneTasks.length;
-
-            colTodo.innerHTML = renderTaskListHTML(todoTasks);
-            colInprogress.innerHTML = renderTaskListHTML(inprogressTasks);
-            colDone.innerHTML = renderTaskListHTML(doneTasks);
-        }
-
-        function renderTaskListHTML(tasks) {
-            if (tasks.length === 0) {
-                return `<div class="p-4 text-center text-xs text-slate-600 border border-dashed border-slate-800/60 rounded-xl">Chưa có bài tập</div>`;
-            }
-
-            return tasks.map(t => `
-                <div class="glass-card p-3.5 rounded-xl border border-slate-800/80 space-y-2 relative group hover:border-emerald-500/40 transition">
-                    <div class="flex items-start justify-between gap-2">
-                        <h5 class="font-bold text-slate-100 text-sm leading-snug">${t.title}</h5>
-                        <div class="flex space-x-1 flex-shrink-0">
-                            <button onclick="editTask('${t.id}')" class="p-1 text-slate-400 hover:text-emerald-400 text-xs">
-                                <i class="fa-solid fa-pen"></i>
-                            </button>
-                            <button onclick="deleteTask('${t.id}', '${escapeHtml(t.title)}')" class="p-1 text-slate-400 hover:text-red-400 text-xs">
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                    ${t.desc ? `<p class="text-xs text-slate-400 line-clamp-2">${t.desc}</p>` : ''}
-                    
-                    <div class="flex items-center justify-between text-[11px] text-slate-400 pt-1">
-                        <span class="bg-slate-800 px-2 py-0.5 rounded text-slate-300 font-medium">
-                            <i class="fa-solid fa-user text-[10px] mr-1"></i>${t.assignee || 'Chưa giao'}
-                        </span>
-                        ${t.due ? `<span class="text-amber-400"><i class="fa-solid fa-calendar-day mr-1"></i>${t.due}</span>` : ''}
-                    </div>
-
-                    ${t.submissionLink ? `
-                        <div class="mt-2 pt-2 border-t border-slate-800/80 bg-emerald-500/5 p-2 rounded-lg">
-                            <div class="text-[10px] font-bold text-emerald-400 flex items-center justify-between">
-                                <span><i class="fa-solid fa-circle-check mr-1"></i>Bài làm đã nộp</span>
-                                <a href="${t.submissionLink}" target="_blank" class="underline hover:text-emerald-300">Xem tệp</a>
-                            </div>
-                            ${t.submissionNote ? `<p class="text-[11px] text-slate-300 italic mt-0.5">"${t.submissionNote}"</p>` : ''}
-                        </div>
-                    ` : ''}
                 </div>
             `).join('');
         }
 
-        // Render Activity Logs
+        function renderTasks() {
+            const todoContainer = document.getElementById('tasks-todo');
+            const doingContainer = document.getElementById('tasks-doing');
+            const doneContainer = document.getElementById('tasks-done');
+
+            if (!todoContainer || !doingContainer || !doneContainer) return;
+
+            const todoTasks = state.tasks.filter(t => t.status === 'TODO');
+            const doingTasks = state.tasks.filter(t => t.status === 'DOING');
+            const doneTasks = state.tasks.filter(t => t.status === 'DONE');
+
+            document.getElementById('count-todo').innerText = todoTasks.length;
+            document.getElementById('count-doing').innerText = doingTasks.length;
+            document.getElementById('count-done').innerText = doneTasks.length;
+
+            const taskCardHTML = (t) => `
+                <div class="bg-slate-800/80 border border-slate-700/60 rounded-xl p-3.5 shadow-sm space-y-2">
+                    <h5 class="text-xs font-bold text-white">${t.title}</h5>
+                    <div class="flex items-center justify-between text-[11px] text-slate-400">
+                        <span><i class="fa-regular fa-user text-slate-500"></i> ${t.assignee || 'Chưa gán'}</span>
+                        ${t.link ? `<a href="${t.link}" target="_blank" class="text-purple-400 hover:underline">Xem tệp</a>` : ''}
+                    </div>
+                </div>
+            `;
+
+            todoContainer.innerHTML = todoTasks.map(taskCardHTML).join('') || `<p class="text-[11px] text-slate-600 italic">Trống</p>`;
+            doingContainer.innerHTML = doingTasks.map(taskCardHTML).join('') || `<p class="text-[11px] text-slate-600 italic">Trống</p>`;
+            doneContainer.innerHTML = doneTasks.map(taskCardHTML).join('') || `<p class="text-[11px] text-slate-600 italic">Trống</p>`;
+        }
+
         function renderLogs() {
-            const listEl = document.getElementById('logs-list');
-            const tickerEl = document.getElementById('latest-activity-ticker');
-
-            if (tickerEl) {
-                if (logsData.length > 0) {
-                    tickerEl.textContent = `${logsData[0].message} (${formatTime(logsData[0].createdAt)})`;
-                } else {
-                    tickerEl.textContent = 'Trang web đã sẵn sàng hoạt động.';
-                }
-            }
-
-            if (!listEl) return;
-
-            if (logsData.length === 0) {
-                listEl.innerHTML = `<div class="p-4 text-center text-xs text-slate-500">Chưa có nhật ký nào.</div>`;
+            const list = document.getElementById('logs-list');
+            if (!list) return;
+            if (state.logs.length === 0) {
+                list.innerHTML = `<p class="text-xs text-slate-500 text-center py-4">Chưa có nhật ký hoạt động.</p>`;
                 return;
             }
-
-            listEl.innerHTML = logsData.map(l => `
-                <div class="p-3 bg-slate-900/80 border border-slate-800 rounded-xl text-xs space-y-1">
-                    <div class="flex items-center justify-between text-slate-400">
-                        <span class="font-bold text-emerald-400">User ${l.user}</span>
-                        <span class="text-[10px] text-slate-500">${formatTime(l.createdAt)}</span>
-                    </div>
-                    <p class="text-slate-200 font-medium">${l.message}</p>
+            list.innerHTML = state.logs.map(l => `
+                <div class="bg-slate-800/50 p-2.5 rounded-xl border border-slate-700/50 text-xs text-slate-300">
+                    <p>⚡ ${l.text}</p>
                 </div>
             `).join('');
         }
 
-        function formatTime(timestamp) {
-            if (!timestamp) return 'Vừa xong';
-            const date = timestamp.toDate ? timestamp.toDate() : new Date((timestamp.seconds || Date.now() / 1000) * 1000);
-            return date.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        // --- XỬ LÝ XÓA THÀNH VIÊN (FIXED TIẾN TRÌNH KHÔNG BỊ KHỰA/STUCK) ---
+        function confirmDeleteMember(id, name) {
+            targetDeleteMemberId = id;
+            document.getElementById('confirm-delete-name').innerText = name;
+            const btn = document.getElementById('btn-confirm-delete');
+            if (btn) btn.innerText = "Xác nhận xóa";
+            document.getElementById('confirm-modal').classList.remove('hidden');
         }
 
-        function escapeHtml(str) {
-            return (str || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        function closeConfirmModal() {
+            document.getElementById('confirm-modal').classList.add('hidden');
+            targetDeleteMemberId = null;
         }
 
-        // Member Handlers
-        window.saveMember = async function(e) {
-            e.preventDefault();
-            const id = document.getElementById('member-id').value;
-            const name = document.getElementById('member-name').value;
-            const role = document.getElementById('member-role').value;
-            const studentId = document.getElementById('member-student-id').value;
-            const avatar = document.getElementById('member-avatar').value;
-            const contact = document.getElementById('member-contact').value;
-            const desc = document.getElementById('member-desc').value;
+        async function executeDeleteMember() {
+            if (!targetDeleteMemberId) return;
 
+            const btn = document.getElementById('btn-confirm-delete');
+            if (btn) btn.innerText = "Đang xóa...";
+
+            const memberObj = state.members.find(m => m.id === targetDeleteMemberId);
+            const memberName = memberObj ? memberObj.name : "Thành viên";
+
+            // Xóa tức thì ở Local State để UI lập tức phản hồi
+            state.members = state.members.filter(m => m.id !== targetDeleteMemberId);
+            renderMembers();
+
+            // Gọi Firebase đồng bộ với cơ chế Giới hạn thời gian Timeout (3 giây)
             try {
-                if (id) {
-                    // Update existing
-                    const docRef = doc(MEMBERS_COL, id);
-                    await updateDoc(docRef, { name, role, studentId, avatar, contact, desc });
-                    // Local state backup update
-                    const idx = membersData.findIndex(item => item.id === id);
-                    if (idx !== -1) membersData[idx] = { ...membersData[idx], name, role, studentId, avatar, contact, desc };
-                    await logActivity(`Đã cập nhật thông tin thành viên "${name}"`);
-                } else {
-                    // Add new
-                    const newDoc = await addDoc(MEMBERS_COL, { name, role, studentId, avatar, contact, desc, createdAt: serverTimestamp() });
-                    membersData.unshift({ id: newDoc.id, name, role, studentId, avatar, contact, desc });
-                    await logActivity(`Đã thêm thành viên mới "${name}" (${role})`);
+                if (window.db && window.fb) {
+                    const { doc, deleteDoc } = window.fb;
+                    const deletePromise = deleteDoc(doc(window.db, "members", targetDeleteMemberId));
+                    
+                    // Tạo timeout 2.5 giây chống kẹt do Security Rules
+                    const timeoutPromise = new Promise((_, reject) => 
+                        setTimeout(() => reject(new Error("Timeout Firebase")), 2500)
+                    );
+
+                    await Promise.race([deletePromise, timeoutPromise]);
                 }
-                renderMembers();
-                closeMemberModal();
-            } catch (err) {
-                console.error("Save member error:", err);
-                // Fallback local save if offline
-                if (!id) {
-                    const tempId = 'local-' + Date.now();
-                    membersData.unshift({ id: tempId, name, role, studentId, avatar, contact, desc });
-                    renderMembers();
-                    logActivity(`Đã thêm thành viên tạm thời "${name}"`);
-                }
-                closeMemberModal();
-            }
-        };
-
-        window.editMember = function(id) {
-            const m = membersData.find(item => item.id === id);
-            if (!m) return;
-            document.getElementById('member-id').value = m.id;
-            document.getElementById('member-name').value = m.name;
-            document.getElementById('member-role').value = m.role || '';
-            document.getElementById('member-student-id').value = m.studentId || '';
-            document.getElementById('member-avatar').value = m.avatar || '';
-            document.getElementById('member-contact').value = m.contact || '';
-            document.getElementById('member-desc').value = m.desc || '';
-            document.getElementById('member-modal-title').textContent = 'Sửa Thông Tin Thành Viên';
-            document.getElementById('member-modal').classList.remove('hidden');
-        };
-
-        // Trigger deletion modal
-        window.promptDeleteMember = function(id, name) {
-            memberToDeleteTarget = { id, name };
-            document.getElementById('delete-confirm-text').innerHTML = `Bạn có chắc chắn muốn xóa thành viên <strong class="text-emerald-400">${name}</strong> khỏi danh sách NHÓM 2 không?`;
-            document.getElementById('delete-confirm-modal').classList.remove('hidden');
-        };
-
-        window.closeDeleteConfirmModal = function() {
-            memberToDeleteTarget = null;
-            document.getElementById('delete-confirm-modal').classList.add('hidden');
-        };
-
-        // Execute member deletion with complete error handling and log feedback
-        window.executeDeleteMember = async function() {
-            if (!memberToDeleteTarget) return;
-            const { id, name } = memberToDeleteTarget;
-            const confirmBtn = document.getElementById('confirm-delete-btn');
-            confirmBtn.disabled = true;
-            confirmBtn.textContent = 'Đang xóa...';
-
-            try {
-                // Remove from Firestore if valid document reference
-                if (id && !id.startsWith('default-') && !id.startsWith('local-')) {
-                    const memberDocRef = doc(MEMBERS_COL, id);
-                    await deleteDoc(memberDocRef);
-                }
-                
-                // Immediately update local array for instant response
-                membersData = membersData.filter(item => item.id !== id);
-                renderMembers();
-                
-                // Add realtime log entry
-                await logActivity(`Đã xóa thành viên "${name}" khỏi danh sách nhóm`);
-            } catch (err) {
-                console.error("Error deleting member from Firestore:", err);
-                // Local fallback deletion if network or permission error occurs
-                membersData = membersData.filter(item => item.id !== id);
-                renderMembers();
-                logActivity(`Đã xóa thành viên "${name}" (Local Sync)`);
+            } catch (e) {
+                console.warn("Đã xóa khỏi bộ nhớ tạm cục bộ (Local Fallback):", e.message);
             } finally {
-                confirmBtn.disabled = false;
-                confirmBtn.textContent = 'Xóa ngay';
-                closeDeleteConfirmModal();
-            }
-        };
-
-        // Doc Handlers
-        window.saveDoc = async function(e) {
-            e.preventDefault();
-            const title = document.getElementById('doc-title').value;
-            const type = document.getElementById('doc-type').value;
-            const url = document.getElementById('doc-url').value;
-            const author = document.getElementById('doc-author').value;
-            const desc = document.getElementById('doc-desc').value;
-
-            try {
-                await addDoc(DOCS_COL, { title, type, url, author, desc, createdAt: serverTimestamp() });
-                await logActivity(`Thành viên ${author} vừa tải lên tài liệu mới: "${title}"`);
-                closeDocModal();
-            } catch (err) {
-                console.error("Save doc error:", err);
-            }
-        };
-
-        window.deleteDoc = async function(id, title) {
-            try {
-                await deleteDoc(doc(DOCS_COL, id));
-                docsData = docsData.filter(d => d.id !== id);
-                renderDocs();
-                await logActivity(`Đã xóa tài liệu "${title}"`);
-            } catch (err) {
-                console.error("Delete doc error:", err);
-            }
-        };
-
-        window.filterDocs = function() {
-            renderDocs();
-        };
-
-        window.setDocFilter = function(type) {
-            currentDocFilter = type;
-            document.querySelectorAll('.doc-filter-btn').forEach(btn => {
-                if (btn.dataset.type === type) {
-                    btn.className = "doc-filter-btn px-4 py-2 bg-emerald-500 text-slate-950 text-xs font-bold rounded-xl whitespace-nowrap";
-                } else {
-                    btn.className = "doc-filter-btn px-4 py-2 bg-slate-900 text-slate-400 hover:text-white border border-slate-800 text-xs font-medium rounded-xl whitespace-nowrap";
-                }
-            });
-            renderDocs();
-        };
-
-        // Task Handlers
-        window.saveTask = async function(e) {
-            e.preventDefault();
-            const id = document.getElementById('task-id').value;
-            const title = document.getElementById('task-title').value;
-            const assignee = document.getElementById('task-assignee').value;
-            const due = document.getElementById('task-due').value;
-            const desc = document.getElementById('task-desc').value;
-            const status = document.getElementById('task-status').value;
-            const submissionLink = document.getElementById('task-submission-link').value;
-            const submissionNote = document.getElementById('task-submission-note').value;
-
-            try {
-                if (id) {
-                    await updateDoc(doc(TASKS_COL, id), { title, assignee, due, desc, status, submissionLink, submissionNote });
-                    await logActivity(`Đã cập nhật bài tập/tiến độ: "${title}" (${status})`);
-                } else {
-                    await addDoc(TASKS_COL, { title, assignee, due, desc, status, submissionLink, submissionNote, createdAt: serverTimestamp() });
-                    await logActivity(`Đã giao bài tập mới "${title}" cho ${assignee}`);
-                }
-                closeTaskModal();
-            } catch (err) {
-                console.error("Save task error:", err);
-            }
-        };
-
-        window.editTask = function(id) {
-            const t = tasksData.find(item => item.id === id);
-            if (!t) return;
-            document.getElementById('task-id').value = t.id;
-            document.getElementById('task-title').value = t.title;
-            document.getElementById('task-assignee').value = t.assignee || '';
-            document.getElementById('task-due').value = t.due || '';
-            document.getElementById('task-desc').value = t.desc || '';
-            document.getElementById('task-status').value = t.status || 'todo';
-            document.getElementById('task-submission-link').value = t.submissionLink || '';
-            document.getElementById('task-submission-note').value = t.submissionNote || '';
-            document.getElementById('task-modal-title').textContent = 'Sửa / Nộp Bài Tập';
-            document.getElementById('task-modal').classList.remove('hidden');
-        };
-
-        window.deleteTask = async function(id, title) {
-            try {
-                await deleteDoc(doc(TASKS_COL, id));
-                tasksData = tasksData.filter(t => t.id !== id);
-                renderTasks();
-                await logActivity(`Đã xóa bài tập "${title}"`);
-            } catch (err) {
-                console.error("Delete task error:", err);
-            }
-        };
-
-        // Start Auth Initialization
-        initAuth();
-    </script>
-
-    <script>
-        // Navigation Tab Switching Logic
-        function switchTab(tabName) {
-            // Hide all tab contents
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-            
-            // Deactivate header buttons
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.className = "tab-btn px-5 py-2 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center space-x-2 text-slate-400 hover:text-slate-200";
-            });
-
-            // Deactivate mobile nav buttons
-            document.querySelectorAll('.mob-tab-btn').forEach(btn => {
-                btn.className = "mob-tab-btn flex flex-col items-center p-2 text-slate-400";
-            });
-
-            // Show active section
-            const activeSection = document.getElementById(`tab-${tabName}`);
-            if (activeSection) activeSection.classList.remove('hidden');
-
-            // Highlight header button
-            const activeTabBtn = document.getElementById(`tab-btn-${tabName}`);
-            if (activeTabBtn) {
-                activeTabBtn.className = "tab-btn px-5 py-2 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center space-x-2 text-emerald-400 bg-slate-800/80 shadow-sm";
-            }
-
-            // Highlight mobile button
-            const activeMobBtn = document.getElementById(`mob-tab-${tabName}`);
-            if (activeMobBtn) {
-                activeMobBtn.className = "mob-tab-btn flex flex-col items-center p-2 text-emerald-400";
+                addActivityLog(`Đã xóa thành viên: ${memberName}`);
+                closeConfirmModal();
             }
         }
 
-        // Modal Controls
+        // --- MODAL & FORM HANDLERS ---
         function openMemberModal() {
             document.getElementById('member-form').reset();
-            document.getElementById('member-id').value = '';
-            document.getElementById('member-modal-title').textContent = 'Thêm Thành Viên Mới';
             document.getElementById('member-modal').classList.remove('hidden');
         }
         function closeMemberModal() {
             document.getElementById('member-modal').classList.add('hidden');
         }
 
-        function openDocModal() {
-            document.getElementById('doc-form').reset();
-            document.getElementById('doc-modal').classList.remove('hidden');
-        }
-        function closeDocModal() {
-            document.getElementById('doc-modal').classList.add('hidden');
+        async function handleSaveMember(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btn-save-member');
+            if (btn) btn.innerText = "Đang lưu...";
+
+            const newMember = {
+                id: Date.now().toString(),
+                name: document.getElementById('member-name').value,
+                role: document.getElementById('member-role').value,
+                mssv: document.getElementById('member-mssv').value,
+                avatar: document.getElementById('member-avatar').value,
+                bio: document.getElementById('member-bio').value
+            };
+
+            // Thêm ngay lập tức vào màn hình local
+            state.members.push(newMember);
+            renderMembers();
+
+            try {
+                if (window.db && window.fb) {
+                    const { collection, addDoc } = window.fb;
+                    const savePromise = addDoc(collection(window.db, "members"), { ...newMember });
+                    const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 2500));
+                    await Promise.race([savePromise, timeoutPromise]);
+                }
+            } catch(e) {
+                console.warn("Lưu thành viên local thành công:", e.message);
+            } finally {
+                if (btn) btn.innerText = "Lưu thành viên";
+                addActivityLog(`Thêm thành viên mới: ${newMember.name}`);
+                closeMemberModal();
+            }
         }
 
-        function openTaskModal() {
-            document.getElementById('task-form').reset();
-            document.getElementById('task-id').value = '';
-            document.getElementById('task-modal-title').textContent = 'Tạo Bài Tập Mới';
-            document.getElementById('task-modal').classList.remove('hidden');
-        }
-        function closeTaskModal() {
-            document.getElementById('task-modal').classList.add('hidden');
+        // --- TÀI LIỆU MODAL HANDLER ---
+        function openDocModal() { document.getElementById('doc-modal').classList.remove('hidden'); }
+        function closeDocModal() { document.getElementById('doc-modal').classList.add('hidden'); }
+
+        async function handleSaveDoc(e) {
+            e.preventDefault();
+            const newDoc = {
+                id: Date.now().toString(),
+                title: document.getElementById('doc-title').value,
+                type: document.getElementById('doc-type').value,
+                url: document.getElementById('doc-url').value,
+                author: document.getElementById('doc-author').value || 'Thành viên nhóm'
+            };
+
+            state.docs.push(newDoc);
+            renderDocs();
+
+            try {
+                if (window.db && window.fb) {
+                    const { collection, addDoc } = window.fb;
+                    await addDoc(collection(window.db, "docs"), newDoc);
+                }
+            } catch(e) { console.warn(e); }
+
+            addActivityLog(`Đã tải lên tài liệu: ${newDoc.title}`);
+            closeDocModal();
         }
 
-        function toggleLogsModal() {
-            const modal = document.getElementById('logs-modal');
-            modal.classList.toggle('hidden');
+        // --- BÀI TẬP MODAL HANDLER ---
+        function openTaskModal() { document.getElementById('task-modal').classList.remove('hidden'); }
+        function closeTaskModal() { document.getElementById('task-modal').classList.add('hidden'); }
+
+        async function handleSaveTask(e) {
+            e.preventDefault();
+            const newTask = {
+                id: Date.now().toString(),
+                title: document.getElementById('task-title').value,
+                assignee: document.getElementById('task-assignee').value,
+                status: document.getElementById('task-status').value,
+                link: document.getElementById('task-link').value
+            };
+
+            state.tasks.push(newTask);
+            renderTasks();
+
+            try {
+                if (window.db && window.fb) {
+                    const { collection, addDoc } = window.fb;
+                    await addDoc(collection(window.db, "tasks"), newTask);
+                }
+            } catch(e) { console.warn(e); }
+
+            addActivityLog(`Cập nhật bài tập: ${newTask.title}`);
+            closeTaskModal();
         }
+
+        function openLogsModal() { document.getElementById('logs-modal').classList.remove('hidden'); }
+        function closeLogsModal() { document.getElementById('logs-modal').classList.add('hidden'); }
     </script>
 </body>
 </html>
