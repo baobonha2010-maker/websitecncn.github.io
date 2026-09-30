@@ -170,35 +170,35 @@
         </div>
 
         <!-- SECTION 1: MEMBERS TAB -->
-        <section id="tab-members" class="tab-content space-y-6">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                    <h3 class="text-xl font-bold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-user-group text-emerald-400"></i>
-                        Danh sách Thành viên Nhóm
-                    </h3>
-                    <p class="text-xs text-slate-400">Thêm, sửa thông tin và vai trò của các thành viên trong NHÓM 2</p>
-                </div>
-                <button onclick="openMemberModal()" class="px-4 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-slate-950 font-bold text-sm rounded-xl shadow-lg shadow-emerald-500/20 flex items-center justify-center space-x-2 transition transform active:scale-95">
-                    <i class="fa-solid fa-plus"></i>
-                    <span>Thêm Thành Viên</span>
-                </button>
+    <section id="tab-members" class="tab-content space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+                <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-user-group text-emerald-400"></i>
+                    Danh sách Thành viên Nhóm
+                </h3>
+                <p class="text-xs text-slate-400">Thêm, sửa thông tin, MSSV và vai trò của các thành viên trong NHÓM 2</p>
             </div>
+            <button onclick="openMemberModal()" class="px-4 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-slate-950 font-bold text-sm rounded-xl shadow-lg shadow-emerald-500/20 flex items-center justify-center space-x-2 transition transform active:scale-95">
+                <i class="fa-solid fa-plus"></i>
+                <span>Thêm Thành Viên</span>
+            </button>
+        </div>
 
-            <!-- Members List Grid -->
-            <div id="members-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                <!-- Loading Skeleton -->
-                <div class="glass-card p-5 rounded-2xl animate-pulse space-y-4">
-                    <div class="flex items-center space-x-4">
-                        <div class="w-14 h-14 bg-slate-800 rounded-full"></div>
-                        <div class="flex-1 space-y-2">
-                            <div class="h-4 bg-slate-800 rounded w-3/4"></div>
-                            <div class="h-3 bg-slate-800 rounded w-1/2"></div>
-                        </div>
+        <!-- Members List Grid -->
+        <div id="members-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            <!-- Loading Skeleton -->
+            <div class="glass-card p-5 rounded-2xl animate-pulse space-y-4">
+                <div class="flex items-center space-x-4">
+                    <div class="w-14 h-14 bg-slate-800 rounded-full"></div>
+                    <div class="flex-1 space-y-2">
+                        <div class="h-4 bg-slate-800 rounded w-3/4"></div>
+                        <div class="h-3 bg-slate-800 rounded w-1/2"></div>
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
         <!-- SECTION 2: DOCUMENTS TAB -->
         <section id="tab-docs" class="tab-content space-y-6 hidden">
@@ -316,9 +316,15 @@
                     <label class="block text-xs font-medium text-slate-300 mb-1">Họ và Tên *</label>
                     <input type="text" id="member-name" required placeholder="Nhập họ tên..." class="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
                 </div>
-                <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1">Vai Trò Trong Nhóm *</label>
-                    <input type="text" id="member-role" required placeholder="Ví dụ: Nhóm trưởng, Coder, Designer..." class="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Vai Trò Trong Nhóm *</label>
+                        <input type="text" id="member-role" required placeholder="Nhóm trưởng, Dev..." class="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Mã Số Sinh Viên (MSSV)</label>
+                        <input type="text" id="member-student-id" placeholder="21120000" class="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
+                    </div>
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-slate-300 mb-1">Đường dẫn ảnh đại diện (URL)</label>
@@ -330,8 +336,8 @@
                     <input type="text" id="member-contact" placeholder="Email hoặc số điện thoại..." class="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1">Mô tả ngắn</label>
-                    <textarea id="member-desc" rows="2" placeholder="Ghi chú về sở trường, nhiệm vụ chính..." class="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-emerald-500"></textarea>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Công việc đảm nhận / Ghi chú</label>
+                    <textarea id="member-desc" rows="2" placeholder="Ghi chú về công việc, nhiệm vụ chính..." class="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-emerald-500"></textarea>
                 </div>
                 <div class="flex justify-end space-x-3 pt-2">
                     <button type="button" onclick="closeMemberModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-semibold rounded-xl">Hủy</button>
@@ -341,50 +347,72 @@
         </div>
     </div>
 
-    <!-- MODAL 2: ADD DOCUMENT -->
+    <!-- MODAL 5: DELETE MEMBER CONFIRMATION MODAL -->
+    <div id="delete-confirm-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm hidden">
+        <div class="glass-card w-full max-w-sm rounded-2xl p-6 border border-slate-800 shadow-2xl relative text-center">
+            <div class="w-12 h-12 rounded-full bg-red-500/10 border border-red-500/20 text-red-500 flex items-center justify-center mx-auto mb-4 text-xl">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h3 class="text-lg font-bold text-white mb-2">Xác nhận xóa thành viên</h3>
+            <p id="delete-confirm-text" class="text-xs text-slate-300 mb-6">Bạn có chắc chắn muốn xóa thành viên này khỏi nhóm không?</p>
+            
+            <div class="flex items-center justify-center space-x-3">
+                <button type="button" onclick="closeDeleteConfirmModal()" class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl transition">
+                    Hủy bỏ
+                </button>
+                <button type="button" id="confirm-delete-btn" onclick="executeDeleteMember()" class="flex-1 py-2.5 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-xl shadow-lg shadow-red-600/30 transition">
+                    Xóa ngay
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: ADD / EDIT DOCUMENT -->
     <div id="doc-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm hidden">
         <div class="glass-card w-full max-w-md rounded-2xl p-6 border border-slate-800 shadow-2xl relative">
             <button onclick="closeDocModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">
                 <i class="fa-solid fa-xmark"></i>
             </button>
-            <h3 class="text-lg font-bold text-white mb-4">Tải lên / Thêm Tài Liệu Mới</h3>
+            <h3 id="doc-modal-title" class="text-lg font-bold text-white mb-4">Tải Lên / Thêm Tài Liệu Mới</h3>
             <form id="doc-form" onsubmit="saveDoc(event)" class="space-y-4">
                 <div>
                     <label class="block text-xs font-medium text-slate-300 mb-1">Tên tài liệu *</label>
-                    <input type="text" id="doc-title" required placeholder="Nhập tên tài liệu..." class="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
+                    <input type="text" id="doc-title" required placeholder="Nhập tên tài liệu, bài giảng..." class="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Loại tài liệu *</label>
+                        <select id="doc-type" required class="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
+                            <option value="PDF">PDF</option>
+                            <option value="Word">Word</option>
+                            <option value="Slide">Slide / PowerPoint</option>
+                            <option value="Link">Liên kết Web</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Người đăng *</label>
+                        <input type="text" id="doc-author" required placeholder="Tên người đăng..." class="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
+                    </div>
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1">Loại tài liệu *</label>
-                    <select id="doc-type" required class="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
-                        <option value="PDF">Tệp PDF</option>
-                        <option value="Word">Tài liệu Word</option>
-                        <option value="Slide">Bài thuyết trình (Slides)</option>
-                        <option value="Link">Liên kết Website / Drive</option>
-                    </select>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Đường dẫn tệp / Liên kết (URL) *</label>
+                    <input type="url" id="doc-url" required placeholder="https://drive.google.com/..." class="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1">Đường dẫn liên kết / Tệp (URL) *</label>
-                    <input type="url" id="doc-url" required placeholder="https://..." class="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
-                </div>
-                <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1">Người chia sẻ *</label>
-                    <input type="text" id="doc-author" required placeholder="Tên của bạn..." class="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
-                </div>
-                <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1">Ghi chú thêm</label>
-                    <input type="text" id="doc-desc" placeholder="Tóm tắt ngắn về tài liệu..." class="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Ghi chú / Mô tả tài liệu</label>
+                    <textarea id="doc-desc" rows="2" placeholder="Nội dung tóm tắt tài liệu..." class="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-emerald-500"></textarea>
                 </div>
                 <div class="flex justify-end space-x-3 pt-2">
                     <button type="button" onclick="closeDocModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-semibold rounded-xl">Hủy</button>
-                    <button type="submit" class="px-5 py-2 bg-emerald-500 hover:bg-emerald-600 text-slate-950 text-sm font-bold rounded-xl">Thêm tài liệu</button>
+                    <button type="submit" class="px-5 py-2 bg-emerald-500 hover:bg-emerald-600 text-slate-950 text-sm font-bold rounded-xl">Lưu tài liệu</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- MODAL 3: CREATE TASK / SUBMIT SOLUTION -->
+    <!-- MODAL 3: ADD / EDIT / SUBMIT TASK -->
     <div id="task-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm hidden">
-        <div class="glass-card w-full max-w-lg rounded-2xl p-6 border border-slate-800 shadow-2xl relative">
+        <div class="glass-card w-full max-w-md rounded-2xl p-6 border border-slate-800 shadow-2xl relative">
             <button onclick="closeTaskModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">
                 <i class="fa-solid fa-xmark"></i>
             </button>
@@ -392,36 +420,43 @@
             <form id="task-form" onsubmit="saveTask(event)" class="space-y-4">
                 <input type="hidden" id="task-id">
                 <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1">Tiêu đề bài tập *</label>
-                    <input type="text" id="task-title" required placeholder="Ví dụ: Thiết kế Slide thuyết trình..." class="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Tên bài tập / Nhiệm vụ *</label>
+                    <input type="text" id="task-title" required placeholder="Nhập tên bài tập..." class="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-medium text-slate-300 mb-1">Người phụ trách *</label>
-                        <input type="text" id="task-assignee" required placeholder="Tên người làm..." class="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Người đảm nhận</label>
+                        <input type="text" id="task-assignee" placeholder="Tên thành viên..." class="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
                     </div>
                     <div>
-                        <label class="block text-xs font-medium text-slate-300 mb-1">Hạn nộp (Deadline)</label>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Hạn nộp</label>
                         <input type="date" id="task-due" class="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
                     </div>
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1">Mô tả nội dung bài tập</label>
-                    <textarea id="task-desc" rows="2" placeholder="Nội dung cần thực hiện..." class="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-emerald-500"></textarea>
-                </div>
-                <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1">Trạng thái</label>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Trạng thái bài tập</label>
                     <select id="task-status" class="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
                         <option value="todo">Cần Làm</option>
                         <option value="inprogress">Đang Thực Hiện</option>
-                        <option value="done">Hoàn Thành (Đã nộp)</option>
+                        <option value="done">Đã Hoàn Thành</option>
                     </select>
                 </div>
-                <!-- Submission fields -->
-                <div class="border-t border-slate-800 pt-3">
-                    <label class="block text-xs font-semibold text-emerald-400 mb-1">Nộp Bài Tập / Kết Quả (Nếu hoàn thành)</label>
-                    <input type="url" id="task-submission-link" placeholder="Đường dẫn file hoàn thành (Google Drive, Github...)" class="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-emerald-500 mb-2">
-                    <input type="text" id="task-submission-note" placeholder="Ghi chú khi nộp bài..." class="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Mô tả bài tập</label>
+                    <textarea id="task-desc" rows="2" placeholder="Yêu cầu chi tiết bài tập..." class="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-emerald-500"></textarea>
+                </div>
+                <div class="pt-2 border-t border-slate-800/80">
+                    <p class="text-xs font-bold text-emerald-400 mb-2"><i class="fa-solid fa-file-arrow-up mr-1"></i>Nộp bài làm (Nếu có):</p>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-xs font-medium text-slate-300 mb-1">Đường dẫn tệp bài làm (URL)</label>
+                            <input type="url" id="task-submission-link" placeholder="https://drive.google.com/..." class="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-300 mb-1">Ghi chú khi nộp bài</label>
+                            <input type="text" id="task-submission-note" placeholder="Nhận xét hoặc lưu ý khi nộp bài..." class="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
+                        </div>
+                    </div>
                 </div>
                 <div class="flex justify-end space-x-3 pt-2">
                     <button type="button" onclick="closeTaskModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-semibold rounded-xl">Hủy</button>
@@ -433,17 +468,18 @@
 
     <!-- MODAL 4: ACTIVITY LOGS MODAL -->
     <div id="logs-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm hidden">
-        <div class="glass-card w-full max-w-lg rounded-2xl p-6 border border-slate-800 shadow-2xl relative max-h-[80vh] flex flex-col">
-            <button onclick="toggleLogsModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-            <h3 class="text-lg font-bold text-white mb-1 flex items-center gap-2">
-                <i class="fa-solid fa-clock-rotate-left text-emerald-400"></i>
-                Nhật Ký Cập Nhật Realtime
-            </h3>
-            <p class="text-xs text-slate-400 mb-4">Tất cả thay đổi từ mọi người dùng sẽ hiển thị ngay tại đây</p>
+        <div class="glass-card w-full max-w-lg rounded-2xl p-6 border border-slate-800 shadow-2xl relative flex flex-col max-h-[80vh]">
+            <div class="flex items-center justify-between pb-4 border-b border-slate-800 mb-4">
+                <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-clock-rotate-left text-emerald-400"></i>
+                    Nhật ký Hoạt động Realtime
+                </h3>
+                <button onclick="toggleLogsModal()" class="text-slate-400 hover:text-white text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
             <div id="logs-list" class="space-y-3 overflow-y-auto flex-1 pr-1">
-                <!-- Log entries -->
+                <!-- Log items populated dynamically -->
             </div>
         </div>
     </div>
@@ -480,6 +516,31 @@
         let logsData = [];
         let currentDocFilter = 'all';
 
+        // Temporary target for member deletion confirmation
+        let memberToDeleteTarget = null;
+
+        // Fallback default sample members if collection is empty
+        const INITIAL_MEMBERS = [
+            {
+                id: 'default-1',
+                name: 'Nguyễn Văn An',
+                role: 'Nhóm trưởng',
+                studentId: '21120001',
+                avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+                contact: 'an.nguyen@nhom2.edu.vn',
+                desc: 'Phụ trách điều phối công việc và quản lý tiến độ tổng thể của nhóm.'
+            },
+            {
+                id: 'default-2',
+                name: 'Trần Thị Bích',
+                role: 'UI/UX Designer',
+                studentId: '21120002',
+                avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80',
+                contact: 'bich.tran@nhom2.edu.vn',
+                desc: 'Thiết kế giao diện người dùng và tạo tài liệu thuyết trình.'
+            }
+        ];
+
         // Define Collection Paths strictly using Artifact Public Standard
         const MEMBERS_COL = collection(db, 'artifacts', appId, 'public', 'data', 'members');
         const DOCS_COL = collection(db, 'artifacts', appId, 'public', 'data', 'docs');
@@ -496,6 +557,11 @@
                 }
             } catch (err) {
                 console.error("Auth error:", err);
+                // Load fallback local members on auth failure
+                if (membersData.length === 0) {
+                    membersData = [...INITIAL_MEMBERS];
+                    renderMembers();
+                }
             }
         }
 
@@ -516,9 +582,21 @@
 
             // Members Listener
             onSnapshot(MEMBERS_COL, (snapshot) => {
-                membersData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                const loaded = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                if (loaded.length === 0 && membersData.length === 0) {
+                    // Populate initial sample members if database is fresh/empty
+                    membersData = [...INITIAL_MEMBERS];
+                } else if (loaded.length > 0) {
+                    membersData = loaded;
+                }
                 renderMembers();
-            }, (error) => console.error("Members error:", error));
+            }, (error) => {
+                console.error("Members snapshot error:", error);
+                if (membersData.length === 0) {
+                    membersData = [...INITIAL_MEMBERS];
+                    renderMembers();
+                }
+            });
 
             // Docs Listener
             onSnapshot(DOCS_COL, (snapshot) => {
@@ -535,7 +613,6 @@
             // Activity Logs Listener
             onSnapshot(LOGS_COL, (snapshot) => {
                 logsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                // Sort by timestamp in memory
                 logsData.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
                 renderLogs();
             }, (error) => console.error("Logs error:", error));
@@ -543,14 +620,25 @@
 
         // Add Log Helper
         async function logActivity(actionMessage) {
+            const userTag = currentUser ? currentUser.uid.slice(0, 6) : 'Thành viên';
+            const logObj = {
+                message: actionMessage,
+                user: userTag,
+                createdAt: { seconds: Math.floor(Date.now() / 1000) }
+            };
+
+            // Prepend to local memory logs for immediate UX feedback
+            logsData.unshift(logObj);
+            renderLogs();
+
             try {
                 await addDoc(LOGS_COL, {
                     message: actionMessage,
-                    user: currentUser ? currentUser.uid.slice(0, 6) : 'Nặc danh',
+                    user: userTag,
                     createdAt: serverTimestamp()
                 });
             } catch (e) {
-                console.error("Error logging activity", e);
+                console.error("Error logging activity to Firestore", e);
             }
         }
 
@@ -568,23 +656,28 @@
 
             container.innerHTML = membersData.map(m => `
                 <div class="glass-card p-5 rounded-2xl relative group hover:border-emerald-500/50 transition-all duration-300">
-                    <div class="absolute top-4 right-4 flex space-x-1 opacity-80 group-hover:opacity-100">
-                        <button onclick="editMember('${m.id}')" class="p-1.5 text-slate-400 hover:text-emerald-400 text-xs rounded-lg hover:bg-slate-800">
-                            <i class="fa-solid fa-pen"></i>
+                    <div class="absolute top-3.5 right-3.5 flex items-center space-x-1.5 z-10">
+                        <button onclick="editMember('${m.id}')" title="Sửa thông tin" class="p-2 text-slate-400 hover:text-emerald-400 bg-slate-900/80 hover:bg-slate-800 rounded-xl border border-slate-800 transition">
+                            <i class="fa-solid fa-pen text-xs"></i>
                         </button>
-                        <button onclick="deleteMember('${m.id}', '${escapeHtml(m.name)}')" class="p-1.5 text-slate-400 hover:text-red-400 text-xs rounded-lg hover:bg-slate-800">
-                            <i class="fa-solid fa-trash"></i>
+                        <button onclick="promptDeleteMember('${m.id}', '${escapeHtml(m.name)}')" title="Xóa thành viên" class="p-2 text-red-400/80 hover:text-red-400 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 rounded-xl transition">
+                            <i class="fa-solid fa-trash-can text-xs"></i>
                         </button>
                     </div>
                     <div class="flex items-start space-x-4">
-                        <img src="${m.avatar || 'https://placehold.co/150/1e293b/10b981?text=' + encodeURIComponent(m.name.charAt(0))}" 
+                        <img src="${m.avatar || 'https://placehold.co/150/1e293b/10b981?text=' + encodeURIComponent(m.name ? m.name.charAt(0) : 'N')}" 
                              onerror="this.src='https://placehold.co/150/1e293b/10b981?text=N2'"
                              class="w-14 h-14 rounded-2xl object-cover border-2 border-slate-700/80 shadow-md">
-                        <div class="flex-1 min-w-0">
+                        <div class="flex-1 min-w-0 pr-16">
                             <h4 class="font-bold text-white text-base truncate">${m.name}</h4>
-                            <span class="inline-block px-2.5 py-0.5 text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-md mt-0.5">
-                                ${m.role || 'Thành viên'}
-                            </span>
+                            <div class="flex flex-wrap items-center gap-1.5 mt-1">
+                                <span class="inline-block px-2.5 py-0.5 text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-md">
+                                    ${m.role || 'Thành viên'}
+                                </span>
+                                ${m.studentId ? `<span class="inline-block px-2 py-0.5 text-[10px] font-mono text-slate-400 bg-slate-800 border border-slate-700/50 rounded-md">
+                                    MSSV: ${m.studentId}
+                                </span>` : ''}
+                            </div>
                         </div>
                     </div>
                     <div class="mt-4 pt-3 border-t border-slate-800/80 space-y-1.5 text-xs">
@@ -593,7 +686,7 @@
                             <span>${m.contact || 'Chưa cập nhật liên hệ'}</span>
                         </p>
                         <p class="text-slate-400 italic text-[11px] line-clamp-2">
-                            "${m.desc || 'Thành viên hăng hái của Nhóm 2.'}"
+                            "${m.desc || 'Thành viên tích cực của Nhóm 2.'}"
                         </p>
                     </div>
                 </div>
@@ -720,11 +813,15 @@
             const listEl = document.getElementById('logs-list');
             const tickerEl = document.getElementById('latest-activity-ticker');
 
-            if (logsData.length > 0) {
-                tickerEl.textContent = `${logsData[0].message} (${formatTime(logsData[0].createdAt)})`;
-            } else {
-                tickerEl.textContent = 'Trang web đã sẵn sàng hoạt động.';
+            if (tickerEl) {
+                if (logsData.length > 0) {
+                    tickerEl.textContent = `${logsData[0].message} (${formatTime(logsData[0].createdAt)})`;
+                } else {
+                    tickerEl.textContent = 'Trang web đã sẵn sàng hoạt động.';
+                }
             }
+
+            if (!listEl) return;
 
             if (logsData.length === 0) {
                 listEl.innerHTML = `<div class="p-4 text-center text-xs text-slate-500">Chưa có nhật ký nào.</div>`;
@@ -744,7 +841,7 @@
 
         function formatTime(timestamp) {
             if (!timestamp) return 'Vừa xong';
-            const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp.seconds * 1000);
+            const date = timestamp.toDate ? timestamp.toDate() : new Date((timestamp.seconds || Date.now() / 1000) * 1000);
             return date.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
         }
 
@@ -758,21 +855,38 @@
             const id = document.getElementById('member-id').value;
             const name = document.getElementById('member-name').value;
             const role = document.getElementById('member-role').value;
+            const studentId = document.getElementById('member-student-id').value;
             const avatar = document.getElementById('member-avatar').value;
             const contact = document.getElementById('member-contact').value;
             const desc = document.getElementById('member-desc').value;
 
             try {
                 if (id) {
-                    await updateDoc(doc(MEMBERS_COL, id), { name, role, avatar, contact, desc });
+                    // Update existing
+                    const docRef = doc(MEMBERS_COL, id);
+                    await updateDoc(docRef, { name, role, studentId, avatar, contact, desc });
+                    // Local state backup update
+                    const idx = membersData.findIndex(item => item.id === id);
+                    if (idx !== -1) membersData[idx] = { ...membersData[idx], name, role, studentId, avatar, contact, desc };
                     await logActivity(`Đã cập nhật thông tin thành viên "${name}"`);
                 } else {
-                    await addDoc(MEMBERS_COL, { name, role, avatar, contact, desc, createdAt: serverTimestamp() });
+                    // Add new
+                    const newDoc = await addDoc(MEMBERS_COL, { name, role, studentId, avatar, contact, desc, createdAt: serverTimestamp() });
+                    membersData.unshift({ id: newDoc.id, name, role, studentId, avatar, contact, desc });
                     await logActivity(`Đã thêm thành viên mới "${name}" (${role})`);
                 }
+                renderMembers();
                 closeMemberModal();
             } catch (err) {
                 console.error("Save member error:", err);
+                // Fallback local save if offline
+                if (!id) {
+                    const tempId = 'local-' + Date.now();
+                    membersData.unshift({ id: tempId, name, role, studentId, avatar, contact, desc });
+                    renderMembers();
+                    logActivity(`Đã thêm thành viên tạm thời "${name}"`);
+                }
+                closeMemberModal();
             }
         };
 
@@ -782,6 +896,7 @@
             document.getElementById('member-id').value = m.id;
             document.getElementById('member-name').value = m.name;
             document.getElementById('member-role').value = m.role || '';
+            document.getElementById('member-student-id').value = m.studentId || '';
             document.getElementById('member-avatar').value = m.avatar || '';
             document.getElementById('member-contact').value = m.contact || '';
             document.getElementById('member-desc').value = m.desc || '';
@@ -789,10 +904,49 @@
             document.getElementById('member-modal').classList.remove('hidden');
         };
 
-        window.deleteMember = async function(id, name) {
-            if (confirm(`Bạn có chắc muốn xóa thành viên "${name}" khỏi nhóm?`)) {
-                await deleteDoc(doc(MEMBERS_COL, id));
-                await logActivity(`Đã xóa thành viên "${name}" khỏi danh sách`);
+        // Trigger deletion modal
+        window.promptDeleteMember = function(id, name) {
+            memberToDeleteTarget = { id, name };
+            document.getElementById('delete-confirm-text').innerHTML = `Bạn có chắc chắn muốn xóa thành viên <strong class="text-emerald-400">${name}</strong> khỏi danh sách NHÓM 2 không?`;
+            document.getElementById('delete-confirm-modal').classList.remove('hidden');
+        };
+
+        window.closeDeleteConfirmModal = function() {
+            memberToDeleteTarget = null;
+            document.getElementById('delete-confirm-modal').classList.add('hidden');
+        };
+
+        // Execute member deletion with complete error handling and log feedback
+        window.executeDeleteMember = async function() {
+            if (!memberToDeleteTarget) return;
+            const { id, name } = memberToDeleteTarget;
+            const confirmBtn = document.getElementById('confirm-delete-btn');
+            confirmBtn.disabled = true;
+            confirmBtn.textContent = 'Đang xóa...';
+
+            try {
+                // Remove from Firestore if valid document reference
+                if (id && !id.startsWith('default-') && !id.startsWith('local-')) {
+                    const memberDocRef = doc(MEMBERS_COL, id);
+                    await deleteDoc(memberDocRef);
+                }
+                
+                // Immediately update local array for instant response
+                membersData = membersData.filter(item => item.id !== id);
+                renderMembers();
+                
+                // Add realtime log entry
+                await logActivity(`Đã xóa thành viên "${name}" khỏi danh sách nhóm`);
+            } catch (err) {
+                console.error("Error deleting member from Firestore:", err);
+                // Local fallback deletion if network or permission error occurs
+                membersData = membersData.filter(item => item.id !== id);
+                renderMembers();
+                logActivity(`Đã xóa thành viên "${name}" (Local Sync)`);
+            } finally {
+                confirmBtn.disabled = false;
+                confirmBtn.textContent = 'Xóa ngay';
+                closeDeleteConfirmModal();
             }
         };
 
@@ -815,9 +969,13 @@
         };
 
         window.deleteDoc = async function(id, title) {
-            if (confirm(`Xóa tài liệu "${title}"?`)) {
+            try {
                 await deleteDoc(doc(DOCS_COL, id));
+                docsData = docsData.filter(d => d.id !== id);
+                renderDocs();
                 await logActivity(`Đã xóa tài liệu "${title}"`);
+            } catch (err) {
+                console.error("Delete doc error:", err);
             }
         };
 
@@ -879,9 +1037,13 @@
         };
 
         window.deleteTask = async function(id, title) {
-            if (confirm(`Xóa bài tập "${title}"?`)) {
+            try {
                 await deleteDoc(doc(TASKS_COL, id));
+                tasksData = tasksData.filter(t => t.id !== id);
+                renderTasks();
                 await logActivity(`Đã xóa bài tập "${title}"`);
+            } catch (err) {
+                console.error("Delete task error:", err);
             }
         };
 
