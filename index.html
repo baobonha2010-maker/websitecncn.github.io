@@ -13,14 +13,6 @@
             theme: {
                 extend: {
                     colors: {
-                        brand: {
-                            50: '#ecfdf5',
-                            100: '#d1fae5',
-                            500: '#10b981',
-                            600: '#059669',
-                            700: '#047857',
-                            900: '#064e3b',
-                        },
                         darkbg: '#0b0f19',
                         cardbg: '#111827',
                     }
@@ -32,7 +24,7 @@
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Firebase SDK v10 -->
+    <!-- Firebase SDK v10 (Modular via CDN) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { 
@@ -73,7 +65,7 @@
 </head>
 <body class="bg-[#0b0f19] text-slate-100 font-sans min-h-screen flex flex-col antialiased">
 
-    <!-- TICKER -->
+    <!-- TICKER BAR -->
     <div class="bg-slate-900/90 border-b border-slate-800 text-xs py-2 px-4 backdrop-blur flex items-center justify-between sticky top-0 z-50">
         <div class="flex items-center gap-2 text-emerald-400 font-bold shrink-0 mr-4">
             <span class="relative flex h-2.5 w-2.5">
@@ -84,7 +76,7 @@
         </div>
         <div class="ticker-wrap flex-1 text-slate-400">
             <div id="ticker-content" class="ticker">
-                🚀 Hệ thống quản lý NHÓM 2 đã sẵn sàng. Bạn có thể Thêm / Xóa Thành viên, Tài liệu, Bài tập dễ dàng!
+                🚀 Hệ thống đã sẵn sàng với đầy đủ tính năng THÊM, SỬA, XÓA thời gian thực cho NHÓM 2!
             </div>
         </div>
         <button onclick="openLogsModal()" class="ml-4 shrink-0 text-slate-400 hover:text-emerald-400 transition flex items-center gap-1 bg-slate-800 px-2.5 py-1 rounded-md text-[11px]">
@@ -103,9 +95,9 @@
                     <div>
                         <h1 class="text-xl font-black tracking-wider text-white flex items-center gap-2">
                             NHÓM 2
-                            <span class="text-[10px] uppercase bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/20">Pro</span>
+                            <span class="text-[10px] uppercase bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/20">Full Control</span>
                         </h1>
-                        <p class="text-[11px] text-slate-400">Hệ thống quản lý công việc & tài liệu</p>
+                        <p class="text-[11px] text-slate-400">Hệ thống quản lý công việc, tài liệu & thành viên</p>
                     </div>
                 </div>
 
@@ -131,13 +123,13 @@
         <section class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 p-8 border border-slate-800 shadow-2xl">
             <div class="relative z-10 max-w-3xl">
                 <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold mb-4">
-                    <i class="fa-solid fa-bolt"></i> Cập nhật tính năng Xóa
+                    <i class="fa-solid fa-pen-to-square"></i> Đã hỗ trợ Quản lý Chỉnh Sửa & Xóa
                 </div>
                 <h2 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-                    Cổng thông tin & Quản lý làm việc <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300">NHÓM 2</span>
+                    Cổng thông tin & Quản lý <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300">NHÓM 2</span>
                 </h2>
                 <p class="mt-3 text-slate-400 text-sm sm:text-base leading-relaxed">
-                    Tất cả danh mục Thành viên, Tài liệu, và Bài tập hiện tại đều có nút Xóa để dễ dàng chỉnh sửa dữ liệu nhóm.
+                    Giờ đây bạn có thể dễ dàng **Thêm, Chỉnh Sửa (Sửa)** hoặc **Xóa** bất kỳ Thành viên, Tài liệu hoặc Bài tập nào. Mọi thao tác đều được tự động lưu lại!
                 </p>
             </div>
         </section>
@@ -165,7 +157,7 @@
                     <h3 class="text-xl font-bold text-white flex items-center gap-2">
                         <i class="fa-solid fa-folder-open text-blue-400"></i> Tài liệu & Liên kết
                     </h3>
-                    <p class="text-xs text-slate-400 mt-1">Gửi và lưu trữ tài liệu nhóm</p>
+                    <p class="text-xs text-slate-400 mt-1">Gửi và lưu trữ các tệp bài học, slide, tài liệu tham khảo</p>
                 </div>
                 <button onclick="openDocModal()" class="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-medium px-4 py-2.5 rounded-xl transition text-sm">
                     <i class="fa-solid fa-file-circle-plus"></i> Tải lên Tài liệu
@@ -189,7 +181,7 @@
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Cần làm -->
+                <!-- Chưa hoàn thành -->
                 <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 flex flex-col">
                     <div class="flex items-center justify-between mb-4">
                         <span class="font-bold text-slate-300 text-sm flex items-center gap-2">
@@ -200,7 +192,7 @@
                     <div id="tasks-todo" class="space-y-3 flex-1 min-h-[150px]"></div>
                 </div>
 
-                <!-- Đang làm -->
+                <!-- Đang thực hiện -->
                 <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 flex flex-col">
                     <div class="flex items-center justify-between mb-4">
                         <span class="font-bold text-slate-300 text-sm flex items-center gap-2">
@@ -231,7 +223,7 @@
         <p>© 2026 Trang web quản lý NHÓM 2.</p>
     </footer>
 
-    <!-- MODAL XÁC NHẬN XÓA (DÙNG CHUNG CẢ 3 MỤC) -->
+    <!-- MODAL XÁC NHẬN XÓA -->
     <div id="confirm-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-sm p-6 shadow-2xl text-center">
             <div class="w-12 h-12 bg-rose-500/10 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-4 text-xl">
@@ -239,7 +231,7 @@
             </div>
             <h3 class="text-lg font-bold text-white mb-2">Xác nhận xóa</h3>
             <p class="text-xs text-slate-400 mb-6">
-                Bạn có chắc muốn xóa <span id="confirm-delete-name" class="font-bold text-rose-400"></span>?
+                Bạn có chắc chắn muốn xóa mục này khỏi hệ thống?
             </p>
             <div class="flex justify-center gap-3">
                 <button onclick="closeConfirmModal()" class="px-4 py-2 rounded-xl text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-300">Hủy bỏ</button>
@@ -250,29 +242,31 @@
         </div>
     </div>
 
-    <!-- MODAL THÊM THÀNH VIÊN -->
+    <!-- MODAL THÊM / SỬA THÀNH VIÊN -->
     <div id="member-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md p-6">
-            <h3 class="text-lg font-bold text-white mb-4">Thêm Thành viên mới</h3>
+            <h3 id="member-modal-title" class="text-lg font-bold text-white mb-4">Thêm Thành viên mới</h3>
             <form onsubmit="handleSaveMember(event)" class="space-y-4">
+                <input type="hidden" id="member-id">
                 <input type="text" id="member-name" required placeholder="Họ và tên *" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white">
                 <input type="text" id="member-role" required placeholder="Chức vụ / Vai trò *" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white">
                 <input type="text" id="member-mssv" placeholder="MSSV" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white">
                 <input type="url" id="member-avatar" placeholder="Link ảnh đại diện (URL)" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white">
-                <textarea id="member-bio" rows="2" placeholder="Ghi chú nhiệm vụ" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white"></textarea>
+                <textarea id="member-bio" rows="2" placeholder="Ghi chú nhiệm vụ phụ trách" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white"></textarea>
                 <div class="flex justify-end gap-3">
                     <button type="button" onclick="closeMemberModal()" class="px-4 py-2 rounded-xl text-xs text-slate-400">Hủy</button>
-                    <button type="submit" class="px-4 py-2 rounded-xl text-xs bg-emerald-600 text-white font-semibold">Lưu</button>
+                    <button type="submit" class="px-4 py-2 rounded-xl text-xs bg-emerald-600 text-white font-semibold">Lưu lại</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- MODAL TÀI LIỆU -->
+    <!-- MODAL THÊM / SỬA TÀI LIỆU -->
     <div id="doc-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md p-6">
-            <h3 class="text-lg font-bold text-white mb-4">Tải lên Tài liệu / Link</h3>
+            <h3 id="doc-modal-title" class="text-lg font-bold text-white mb-4">Tải lên / Chỉnh sửa Tài liệu</h3>
             <form onsubmit="handleSaveDoc(event)" class="space-y-4">
+                <input type="hidden" id="doc-id">
                 <input type="text" id="doc-title" required placeholder="Tên tài liệu *" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white">
                 <select id="doc-type" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white">
                     <option value="PDF">Tệp PDF</option>
@@ -280,38 +274,39 @@
                     <option value="SLIDE">Bài thuyết trình Slide</option>
                     <option value="LINK">Link Google Drive / Canva</option>
                 </select>
-                <input type="url" id="doc-url" required placeholder="Link URL *" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white">
-                <input type="text" id="doc-author" placeholder="Người tải lên" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white">
+                <input type="url" id="doc-url" required placeholder="Đường dẫn URL tài liệu *" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white">
+                <input type="text" id="doc-author" placeholder="Người nộp / Tải lên" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white">
                 <div class="flex justify-end gap-3">
                     <button type="button" onclick="closeDocModal()" class="px-4 py-2 rounded-xl text-xs text-slate-400">Hủy</button>
-                    <button type="submit" class="px-4 py-2 rounded-xl text-xs bg-blue-600 text-white font-semibold">Tải lên</button>
+                    <button type="submit" class="px-4 py-2 rounded-xl text-xs bg-blue-600 text-white font-semibold">Lưu lại</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- MODAL BÀI TẬP -->
+    <!-- MODAL THÊM / SỬA BÀI TẬP -->
     <div id="task-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md p-6">
-            <h3 class="text-lg font-bold text-white mb-4">Tạo / Nộp Bài Tập</h3>
+            <h3 id="task-modal-title" class="text-lg font-bold text-white mb-4">Tạo / Chỉnh sửa Bài Tập</h3>
             <form onsubmit="handleSaveTask(event)" class="space-y-4">
-                <input type="text" id="task-title" required placeholder="Tên bài tập *" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white">
+                <input type="hidden" id="task-id">
+                <input type="text" id="task-title" required placeholder="Tên bài tập / Nhiệm vụ *" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white">
                 <input type="text" id="task-assignee" placeholder="Người phụ trách" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white">
                 <select id="task-status" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white">
                     <option value="TODO">Chưa hoàn thành</option>
                     <option value="DOING">Đang thực hiện</option>
                     <option value="DONE">Đã hoàn thành</option>
                 </select>
-                <input type="url" id="task-link" placeholder="Link bài tập (nếu có)" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white">
+                <input type="url" id="task-link" placeholder="Link nộp bài (nếu có)" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white">
                 <div class="flex justify-end gap-3">
                     <button type="button" onclick="closeTaskModal()" class="px-4 py-2 rounded-xl text-xs text-slate-400">Hủy</button>
-                    <button type="submit" class="px-4 py-2 rounded-xl text-xs bg-purple-600 text-white font-semibold">Lưu bài tập</button>
+                    <button type="submit" class="px-4 py-2 rounded-xl text-xs bg-purple-600 text-white font-semibold">Lưu lại</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- MODAL NHẬT KÝ -->
+    <!-- MODAL NHẬT KÝ LỊCH SỬ -->
     <div id="logs-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-lg p-6 flex flex-col max-h-[80vh]">
             <div class="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
@@ -322,30 +317,17 @@
         </div>
     </div>
 
+    <!-- JAVASCRIPT APP LOGIC -->
     <script>
-        // MẶC ĐỊNH
-        const defaultMembers = [
-            { id: 'm1', name: 'Nguyễn Văn An', role: 'Nhóm trưởng', mssv: '20246001', bio: 'Phân công công việc', avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150' },
-            { id: 'm2', name: 'Trần Thị Bích', role: 'Thành viên', mssv: '20246002', bio: 'Slide & Thiết kế', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150' }
-        ];
-
-        const defaultDocs = [
-            { id: 'd1', title: 'Tài liệu đề cương thảo luận nhóm.pdf', type: 'PDF', url: '#', author: 'Nguyễn Văn An' }
-        ];
-
-        const defaultTasks = [
-            { id: 't1', title: 'Nộp báo cáo tiểu luận tuần 1', assignee: 'Trần Thị Bích', status: 'DONE', link: '#' }
-        ];
-
-        // ĐỌC BỘ NHỚ LOCAL HOẶC MẶC ĐỊNH
+        // TRẠNG THÁI DỮ LIỆU CỤC BỘ (Lưu Cache LocalStorage)
         let state = {
-            members: JSON.parse(localStorage.getItem('nhom2_members')) || defaultMembers,
-            docs: JSON.parse(localStorage.getItem('nhom2_docs')) || defaultDocs,
-            tasks: JSON.parse(localStorage.getItem('nhom2_tasks')) || defaultTasks,
+            members: JSON.parse(localStorage.getItem('nhom2_members')) || [],
+            docs: JSON.parse(localStorage.getItem('nhom2_docs')) || [],
+            tasks: JSON.parse(localStorage.getItem('nhom2_tasks')) || [],
             logs: []
         };
 
-        let deleteTarget = { id: null, type: null, collection: null };
+        let targetDelete = { id: null, collectionName: null };
 
         function saveToLocal() {
             localStorage.setItem('nhom2_members', JSON.stringify(state.members));
@@ -360,73 +342,77 @@
             initFirebaseListeners();
         });
 
+        // 1. KẾT NỐI REALTIME CƠ SỞ DỮ LIỆU
         function initFirebaseListeners() {
             if (!window.db || !window.fb) return;
             const { collection, onSnapshot } = window.fb;
 
-            try {
-                onSnapshot(collection(window.db, "members"), (snapshot) => {
-                    if(!snapshot.empty) {
-                        state.members = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                        saveToLocal();
-                        renderMembers();
-                    }
-                });
+            // Thành viên
+            onSnapshot(collection(window.db, "members"), (snapshot) => {
+                state.members = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                saveToLocal();
+                renderMembers();
+            }, (e) => console.warn("Lỗi Members:", e));
 
-                onSnapshot(collection(window.db, "docs"), (snapshot) => {
-                    if(!snapshot.empty) {
-                        state.docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                        saveToLocal();
-                        renderDocs();
-                    }
-                });
+            // Tài liệu
+            onSnapshot(collection(window.db, "docs"), (snapshot) => {
+                state.docs = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                saveToLocal();
+                renderDocs();
+            }, (e) => console.warn("Lỗi Docs:", e));
 
-                onSnapshot(collection(window.db, "tasks"), (snapshot) => {
-                    if(!snapshot.empty) {
-                        state.tasks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                        saveToLocal();
-                        renderTasks();
-                    }
-                });
+            // Bài tập
+            onSnapshot(collection(window.db, "tasks"), (snapshot) => {
+                state.tasks = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                saveToLocal();
+                renderTasks();
+            }, (e) => console.warn("Lỗi Tasks:", e));
 
-                onSnapshot(collection(window.db, "logs"), (snapshot) => {
-                    state.logs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    renderLogs();
-                });
-            } catch (e) {
-                console.warn(e);
-            }
+            // Nhật ký
+            onSnapshot(collection(window.db, "logs"), (snapshot) => {
+                state.logs = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                renderLogs();
+            }, (e) => console.warn("Lỗi Logs:", e));
         }
 
         function addActivityLog(text) {
-            document.getElementById('ticker-content').innerHTML = `🔔 <span class="text-emerald-400 font-semibold">${text}</span> - đã được cập nhật!`;
+            document.getElementById('ticker-content').innerHTML = `🔔 <span class="text-emerald-400 font-semibold">${text}</span> - cập nhật thành công!`;
             if (window.db && window.fb) {
                 window.fb.addDoc(window.fb.collection(window.db, "logs"), { text, timestamp: window.fb.serverTimestamp() });
             }
         }
 
-        // --- RENDER FUNCTIONS ---
+        // --- RENDER GIAO DIỆN ---
         function renderMembers() {
             const grid = document.getElementById('members-grid');
+            if (!grid) return;
+
             if (state.members.length === 0) {
                 grid.innerHTML = `<p class="col-span-full text-center text-slate-500 py-6">Chưa có thành viên nào.</p>`;
                 return;
             }
+
             grid.innerHTML = state.members.map(m => `
-                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 relative group flex flex-col justify-between shadow-lg">
-                    <button onclick="askDelete('${m.id}', 'member', 'members', '${m.name.replace(/'/g, "\\'")}')" class="absolute top-4 right-4 text-slate-500 hover:text-rose-400 bg-slate-800/80 p-2 rounded-lg transition" title="Xóa">
-                        <i class="fa-solid fa-trash-can text-xs"></i>
-                    </button>
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 relative group flex flex-col justify-between shadow-lg hover:border-emerald-500/30 transition">
+                    <div class="absolute top-4 right-4 flex items-center gap-1.5">
+                        <button onclick="editMember('${m.id}')" class="text-slate-400 hover:text-emerald-400 bg-slate-800/80 p-1.5 rounded-lg transition" title="Sửa">
+                            <i class="fa-solid fa-pen text-xs"></i>
+                        </button>
+                        <button onclick="askDelete('${m.id}', 'members')" class="text-slate-400 hover:text-rose-400 bg-slate-800/80 p-1.5 rounded-lg transition" title="Xóa">
+                            <i class="fa-solid fa-trash-can text-xs"></i>
+                        </button>
+                    </div>
+
                     <div>
                         <div class="flex items-center gap-4 mb-4">
                             <img src="${m.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'}" class="w-14 h-14 rounded-2xl object-cover border-2 border-emerald-500/30">
                             <div>
-                                <h4 class="font-bold text-white text-base">${m.name}</h4>
-                                <span class="text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">${m.role || 'Thành viên'}</span>
+                                <h4 class="font-bold text-white text-base leading-snug">${m.name}</h4>
+                                <span class="inline-block text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20 mt-1">${m.role || 'Thành viên'}</span>
                             </div>
                         </div>
-                        <p class="text-xs text-slate-400">${m.mssv ? 'MSSV: ' + m.mssv : ''}</p>
-                        <p class="text-slate-400 text-xs italic mt-1">${m.bio || ''}</p>
+                        ${m.mssv ? `<p class="text-xs text-slate-400 mb-1"><i class="fa-solid fa-id-card text-slate-500 mr-1"></i> MSSV: <span class="text-slate-200">${m.mssv}</span></p>` : ''}
+                        <p class="text-slate-400 text-xs italic mt-2">${m.bio || 'Chưa có thông tin ghi chú...'}</p>
                     </div>
                 </div>
             `).join('');
@@ -434,23 +420,33 @@
 
         function renderDocs() {
             const grid = document.getElementById('docs-grid');
+            if (!grid) return;
+
             if (state.docs.length === 0) {
                 grid.innerHTML = `<p class="col-span-full text-center text-slate-500 py-6">Chưa có tài liệu nào.</p>`;
                 return;
             }
+
             grid.innerHTML = state.docs.map(d => `
-                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 relative flex flex-col justify-between">
-                    <button onclick="askDelete('${d.id}', 'doc', 'docs', '${d.title.replace(/'/g, "\\'")}')" class="absolute top-4 right-4 text-slate-500 hover:text-rose-400 bg-slate-800/80 p-1.5 rounded-lg transition" title="Xóa tài liệu">
-                        <i class="fa-solid fa-trash-can text-xs"></i>
-                    </button>
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 relative flex flex-col justify-between hover:border-blue-500/30 transition">
+                    <div class="absolute top-4 right-4 flex items-center gap-1.5">
+                        <button onclick="editDoc('${d.id}')" class="text-slate-400 hover:text-blue-400 bg-slate-800/80 p-1.5 rounded-lg transition" title="Sửa tài liệu">
+                            <i class="fa-solid fa-pen text-xs"></i>
+                        </button>
+                        <button onclick="askDelete('${d.id}', 'docs')" class="text-slate-400 hover:text-rose-400 bg-slate-800/80 p-1.5 rounded-lg transition" title="Xóa tài liệu">
+                            <i class="fa-solid fa-trash-can text-xs"></i>
+                        </button>
+                    </div>
+
                     <div>
                         <span class="text-xs font-bold px-2.5 py-1 rounded-lg bg-blue-500/10 text-blue-400 border border-blue-500/20 mb-3 inline-block">${d.type || 'DOC'}</span>
-                        <h4 class="font-bold text-white text-sm mb-2 pr-6">${d.title}</h4>
-                        <p class="text-xs text-slate-500">Người gửi: ${d.author || 'Thành viên'}</p>
+                        <h4 class="font-bold text-white text-sm mb-2 pr-14">${d.title}</h4>
+                        <p class="text-xs text-slate-400">Người nộp: <span class="text-slate-300 font-medium">${d.author || 'Thành viên'}</span></p>
                     </div>
-                    <div class="mt-4 pt-3 border-t border-slate-800 flex justify-end">
-                        <a href="${d.url}" target="_blank" class="text-xs font-semibold text-blue-400 bg-blue-500/10 px-3 py-1.5 rounded-lg border border-blue-500/20">
-                            <i class="fa-solid fa-arrow-up-right-from-square"></i> Mở link
+
+                    <div class="mt-4 pt-3 border-t border-slate-800/80 flex justify-end">
+                        <a href="${d.url}" target="_blank" class="text-xs font-semibold text-blue-400 bg-blue-500/10 px-3 py-1.5 rounded-lg border border-blue-500/20 hover:bg-blue-500/20 transition">
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i> Mở liên kết
                         </a>
                     </div>
                 </div>
@@ -462,6 +458,8 @@
             const doingContainer = document.getElementById('tasks-doing');
             const doneContainer = document.getElementById('tasks-done');
 
+            if (!todoContainer || !doingContainer || !doneContainer) return;
+
             const todoTasks = state.tasks.filter(t => t.status === 'TODO');
             const doingTasks = state.tasks.filter(t => t.status === 'DOING');
             const doneTasks = state.tasks.filter(t => t.status === 'DONE');
@@ -470,130 +468,251 @@
             document.getElementById('count-doing').innerText = doingTasks.length;
             document.getElementById('count-done').innerText = doneTasks.length;
 
-            const cardHTML = (t) => `
-                <div class="bg-slate-800/80 border border-slate-700/60 rounded-xl p-3.5 relative group">
-                    <button onclick="askDelete('${t.id}', 'task', 'tasks', '${t.title.replace(/'/g, "\\'")}')" class="absolute top-2.5 right-2 text-slate-500 hover:text-rose-400 p-1 transition" title="Xóa bài tập">
-                        <i class="fa-solid fa-trash-can text-xs"></i>
-                    </button>
-                    <h5 class="text-xs font-bold text-white pr-5">${t.title}</h5>
-                    <div class="flex items-center justify-between text-[11px] text-slate-400 mt-2">
-                        <span><i class="fa-regular fa-user text-slate-500"></i> ${t.assignee || 'Chưa gán'}</span>
-                        ${t.link ? `<a href="${t.link}" target="_blank" class="text-purple-400 hover:underline">Xem bài</a>` : ''}
+            const taskCardHTML = (t) => `
+                <div class="bg-slate-800/80 border border-slate-700/60 rounded-xl p-3.5 relative group shadow-sm">
+                    <div class="absolute top-2.5 right-2 flex items-center gap-1">
+                        <button onclick="editTask('${t.id}')" class="text-slate-400 hover:text-purple-400 p-1 transition" title="Sửa bài tập">
+                            <i class="fa-solid fa-pen text-[11px]"></i>
+                        </button>
+                        <button onclick="askDelete('${t.id}', 'tasks')" class="text-slate-400 hover:text-rose-400 p-1 transition" title="Xóa bài tập">
+                            <i class="fa-solid fa-trash-can text-[11px]"></i>
+                        </button>
+                    </div>
+
+                    <h5 class="text-xs font-bold text-white pr-12 leading-snug">${t.title}</h5>
+                    <div class="flex items-center justify-between text-[11px] text-slate-400 mt-2.5">
+                        <span><i class="fa-regular fa-user text-slate-500 mr-1"></i> ${t.assignee || 'Chưa phân công'}</span>
+                        ${t.link ? `<a href="${t.link}" target="_blank" class="text-purple-400 hover:underline">Xem tệp</a>` : ''}
                     </div>
                 </div>
             `;
 
-            todoContainer.innerHTML = todoTasks.map(cardHTML).join('') || `<p class="text-[11px] text-slate-600 italic">Chưa có bài tập</p>`;
-            doingContainer.innerHTML = doingTasks.map(cardHTML).join('') || `<p class="text-[11px] text-slate-600 italic">Chưa có bài tập</p>`;
-            doneContainer.innerHTML = doneTasks.map(cardHTML).join('') || `<p class="text-[11px] text-slate-600 italic">Chưa có bài tập</p>`;
+            todoContainer.innerHTML = todoTasks.map(taskCardHTML).join('') || `<p class="text-[11px] text-slate-600 italic">Trống</p>`;
+            doingContainer.innerHTML = doingTasks.map(taskCardHTML).join('') || `<p class="text-[11px] text-slate-600 italic">Trống</p>`;
+            doneContainer.innerHTML = doneTasks.map(taskCardHTML).join('') || `<p class="text-[11px] text-slate-600 italic">Trống</p>`;
         }
 
         function renderLogs() {
             const list = document.getElementById('logs-list');
+            if (!list) return;
+            if (state.logs.length === 0) {
+                list.innerHTML = `<p class="text-xs text-slate-500 text-center py-4">Chưa có lịch sử thao tác.</p>`;
+                return;
+            }
             list.innerHTML = state.logs.map(l => `<div class="bg-slate-800/50 p-2.5 rounded-xl border border-slate-700/50 text-xs text-slate-300">⚡ ${l.text}</div>`).join('');
         }
 
-        // --- HAM XÓA TRUNG TÂM (LƯU LOCAL + FIREBASE) ---
-        function askDelete(id, type, collectionName, name) {
-            deleteTarget = { id, type, collection: collectionName };
-            document.getElementById('confirm-delete-name').innerText = name;
+        // --- TÍNH NĂNG XÓA (DELETE) ---
+        function askDelete(id, collectionName) {
+            targetDelete = { id, collectionName };
             document.getElementById('confirm-modal').classList.remove('hidden');
         }
 
         function closeConfirmModal() {
             document.getElementById('confirm-modal').classList.add('hidden');
+            targetDelete = { id: null, collectionName: null };
         }
 
         async function executeDeleteItem() {
-            const { id, type, collection } = deleteTarget;
-            if (!id) return;
+            const { id, collectionName } = targetDelete;
+            if (!id || !collectionName) return;
 
-            // Xóa ngay trong State Local
-            if (type === 'member') state.members = state.members.filter(x => x.id !== id);
-            if (type === 'doc') state.docs = state.docs.filter(x => x.id !== id);
-            if (type === 'task') state.tasks = state.tasks.filter(x => x.id !== id);
+            // Xóa ở Local trước
+            if (collectionName === 'members') state.members = state.members.filter(x => x.id !== id);
+            if (collectionName === 'docs') state.docs = state.docs.filter(x => x.id !== id);
+            if (collectionName === 'tasks') state.tasks = state.tasks.filter(x => x.id !== id);
 
-            saveToLocal(); // Lưu vào bộ nhớ trình duyệt ngay
+            saveToLocal();
             renderMembers();
             renderDocs();
             renderTasks();
 
-            // Xóa trên Firebase Cloud (Promise Timeout 2.5s)
+            // Xóa trực tiếp trên Firebase Cloud
             try {
                 if (window.db && window.fb) {
-                    const deleteRef = window.fb.doc(window.db, collection, id);
-                    const delPromise = window.fb.deleteDoc(deleteRef);
-                    const timeout = new Promise((_, r) => setTimeout(() => r(new Error('Timeout')), 2500));
-                    await Promise.race([delPromise, timeout]);
+                    await window.fb.deleteDoc(window.fb.doc(window.db, collectionName, id));
                 }
             } catch (e) {
-                console.warn("Đã xóa ở Local Cache:", e.message);
+                console.warn("Lỗi đồng bộ Cloud Xóa:", e);
             } finally {
                 addActivityLog(`Đã xóa mục thành công`);
                 closeConfirmModal();
             }
         }
 
-        // MODAL TOGGLES
-        function openMemberModal() { document.getElementById('member-modal').classList.remove('hidden'); }
+        // --- TÍNH NĂNG SỬA (EDIT) ---
+        // 1. Sửa Thành Viên
+        function editMember(id) {
+            const m = state.members.find(x => x.id === id);
+            if (!m) return;
+            document.getElementById('member-id').value = m.id;
+            document.getElementById('member-name').value = m.name || '';
+            document.getElementById('member-role').value = m.role || '';
+            document.getElementById('member-mssv').value = m.mssv || '';
+            document.getElementById('member-avatar').value = m.avatar || '';
+            document.getElementById('member-bio').value = m.bio || '';
+
+            document.getElementById('member-modal-title').innerText = "Chỉnh sửa Thành viên";
+            document.getElementById('member-modal').classList.remove('hidden');
+        }
+
+        // 2. Sửa Tài liệu
+        function editDoc(id) {
+            const d = state.docs.find(x => x.id === id);
+            if (!d) return;
+            document.getElementById('doc-id').value = d.id;
+            document.getElementById('doc-title').value = d.title || '';
+            document.getElementById('doc-type').value = d.type || 'PDF';
+            document.getElementById('doc-url').value = d.url || '';
+            document.getElementById('doc-author').value = d.author || '';
+
+            document.getElementById('doc-modal-title').innerText = "Chỉnh sửa Tài liệu";
+            document.getElementById('doc-modal').classList.remove('hidden');
+        }
+
+        // 3. Sửa Bài tập
+        function editTask(id) {
+            const t = state.tasks.find(x => x.id === id);
+            if (!t) return;
+            document.getElementById('task-id').value = t.id;
+            document.getElementById('task-title').value = t.title || '';
+            document.getElementById('task-assignee').value = t.assignee || '';
+            document.getElementById('task-status').value = t.status || 'TODO';
+            document.getElementById('task-link').value = t.link || '';
+
+            document.getElementById('task-modal-title').innerText = "Chỉnh sửa Bài Tập";
+            document.getElementById('task-modal').classList.remove('hidden');
+        }
+
+        // --- BẬT / TẮT MODALS ---
+        function openMemberModal() {
+            document.getElementById('member-id').value = '';
+            document.getElementById('member-name').value = '';
+            document.getElementById('member-role').value = '';
+            document.getElementById('member-mssv').value = '';
+            document.getElementById('member-avatar').value = '';
+            document.getElementById('member-bio').value = '';
+            document.getElementById('member-modal-title').innerText = "Thêm Thành viên mới";
+            document.getElementById('member-modal').classList.remove('hidden');
+        }
         function closeMemberModal() { document.getElementById('member-modal').classList.add('hidden'); }
-        function openDocModal() { document.getElementById('doc-modal').classList.remove('hidden'); }
+
+        function openDocModal() {
+            document.getElementById('doc-id').value = '';
+            document.getElementById('doc-title').value = '';
+            document.getElementById('doc-url').value = '';
+            document.getElementById('doc-author').value = '';
+            document.getElementById('doc-modal-title').innerText = "Tải lên Tài liệu mới";
+            document.getElementById('doc-modal').classList.remove('hidden');
+        }
         function closeDocModal() { document.getElementById('doc-modal').classList.add('hidden'); }
-        function openTaskModal() { document.getElementById('task-modal').classList.remove('hidden'); }
+
+        function openTaskModal() {
+            document.getElementById('task-id').value = '';
+            document.getElementById('task-title').value = '';
+            document.getElementById('task-assignee').value = '';
+            document.getElementById('task-link').value = '';
+            document.getElementById('task-modal-title').innerText = "Tạo Bài Tập mới";
+            document.getElementById('task-modal').classList.remove('hidden');
+        }
         function closeTaskModal() { document.getElementById('task-modal').classList.add('hidden'); }
+
         function openLogsModal() { document.getElementById('logs-modal').classList.remove('hidden'); }
         function closeLogsModal() { document.getElementById('logs-modal').classList.add('hidden'); }
 
-        // FORMS SAVE
+        // --- LƯU THÀNH VIÊN (THÊM HOẶC SỬA) ---
         async function handleSaveMember(e) {
             e.preventDefault();
-            const item = {
-                id: Date.now().toString(),
+            const id = document.getElementById('member-id').value;
+            const data = {
                 name: document.getElementById('member-name').value,
                 role: document.getElementById('member-role').value,
                 mssv: document.getElementById('member-mssv').value,
                 avatar: document.getElementById('member-avatar').value,
                 bio: document.getElementById('member-bio').value
             };
-            state.members.push(item);
+
+            if (id) {
+                // Sửa thành viên đã có
+                const idx = state.members.findIndex(x => x.id === id);
+                if (idx !== -1) state.members[idx] = { id, ...data };
+                if (window.db && window.fb) await window.fb.updateDoc(window.fb.doc(window.db, "members", id), data);
+                addActivityLog(`Đã cập nhật thông tin thành viên: ${data.name}`);
+            } else {
+                // Thêm mới thành viên
+                if (window.db && window.fb) {
+                    const docRef = await window.fb.addDoc(window.fb.collection(window.db, "members"), data);
+                    state.members.push({ id: docRef.id, ...data });
+                } else {
+                    state.members.push({ id: Date.now().toString(), ...data });
+                }
+                addActivityLog(`Đã thêm thành viên mới: ${data.name}`);
+            }
+
             saveToLocal();
             renderMembers();
-            try { if (window.db && window.fb) await window.fb.addDoc(window.fb.collection(window.db, "members"), item); } catch(e){}
-            addActivityLog(`Đã thêm thành viên: ${item.name}`);
             closeMemberModal();
         }
 
+        // --- LƯU TÀI LIỆU (THÊM HOẶC SỬA) ---
         async function handleSaveDoc(e) {
             e.preventDefault();
-            const item = {
-                id: Date.now().toString(),
+            const id = document.getElementById('doc-id').value;
+            const data = {
                 title: document.getElementById('doc-title').value,
                 type: document.getElementById('doc-type').value,
                 url: document.getElementById('doc-url').value,
                 author: document.getElementById('doc-author').value || 'Thành viên'
             };
-            state.docs.push(item);
+
+            if (id) {
+                const idx = state.docs.findIndex(x => x.id === id);
+                if (idx !== -1) state.docs[idx] = { id, ...data };
+                if (window.db && window.fb) await window.fb.updateDoc(window.fb.doc(window.db, "docs", id), data);
+                addActivityLog(`Đã sửa tài liệu: ${data.title}`);
+            } else {
+                if (window.db && window.fb) {
+                    const docRef = await window.fb.addDoc(window.fb.collection(window.db, "docs"), data);
+                    state.docs.push({ id: docRef.id, ...data });
+                } else {
+                    state.docs.push({ id: Date.now().toString(), ...data });
+                }
+                addActivityLog(`Đã đăng tài liệu: ${data.title}`);
+            }
+
             saveToLocal();
             renderDocs();
-            try { if (window.db && window.fb) await window.fb.addDoc(window.fb.collection(window.db, "docs"), item); } catch(e){}
-            addActivityLog(`Đã thêm tài liệu: ${item.title}`);
             closeDocModal();
         }
 
+        // --- LƯU BÀI TẬP (THÊM HOẶC SỬA) ---
         async function handleSaveTask(e) {
             e.preventDefault();
-            const item = {
-                id: Date.now().toString(),
+            const id = document.getElementById('task-id').value;
+            const data = {
                 title: document.getElementById('task-title').value,
                 assignee: document.getElementById('task-assignee').value,
                 status: document.getElementById('task-status').value,
                 link: document.getElementById('task-link').value
             };
-            state.tasks.push(item);
+
+            if (id) {
+                const idx = state.tasks.findIndex(x => x.id === id);
+                if (idx !== -1) state.tasks[idx] = { id, ...data };
+                if (window.db && window.fb) await window.fb.updateDoc(window.fb.doc(window.db, "tasks", id), data);
+                addActivityLog(`Cập nhật bài tập: ${data.title}`);
+            } else {
+                if (window.db && window.fb) {
+                    const docRef = await window.fb.addDoc(window.fb.collection(window.db, "tasks"), data);
+                    state.tasks.push({ id: docRef.id, ...data });
+                } else {
+                    state.tasks.push({ id: Date.now().toString(), ...data });
+                }
+                addActivityLog(`Tạo bài tập mới: ${data.title}`);
+            }
+
             saveToLocal();
             renderTasks();
-            try { if (window.db && window.fb) await window.fb.addDoc(window.fb.collection(window.db, "tasks"), item); } catch(e){}
-            addActivityLog(`Đã thêm bài tập: ${item.title}`);
             closeTaskModal();
         }
     </script>
