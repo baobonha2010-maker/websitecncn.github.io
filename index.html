@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NHÓM 2 - Workspace Realtime Portal</title>
-    <!-- Tailwind CSS CDN -->
+    <!-- Tailwind CSS CDN -->a
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -75,8 +75,8 @@
                     NHÓM 2
                 </h1>
                 <p class="text-xs text-slate-400 flex items-center gap-1.5">
-                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span id="sync-status">Đang kết nối Realtime...</span>
+                    <span id="sync-dot" class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span id="sync-status">Đang khởi tạo Realtime...</span>
                 </p>
             </div>
         </div>
@@ -84,7 +84,7 @@
         <!-- Navigation Tabs -->
         <nav class="hidden md:flex items-center space-x-2 bg-slate-900/80 p-1.5 rounded-2xl border border-slate-800">
             <button onclick="switchTab('members')" id="tab-btn-members" class="tab-btn px-5 py-2 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center space-x-2 text-emerald-400 bg-slate-800/80 shadow-sm">
-                <i class="fa-solid font-bold fa-users"></i>
+                <i class="fa-solid fa-users"></i>
                 <span>Thành viên</span>
             </button>
             <button onclick="switchTab('docs')" id="tab-btn-docs" class="tab-btn px-5 py-2 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center space-x-2 text-slate-400 hover:text-slate-200">
@@ -105,7 +105,7 @@
             </button>
             <div id="user-info" class="text-right hidden sm:block">
                 <span class="block text-xs text-slate-400">Đang truy cập</span>
-                <span id="user-id-display" class="text-xs font-mono font-medium text-emerald-400">Anonym</span>
+                <span id="user-id-display" class="text-xs font-mono font-medium text-emerald-400">Đang tải...</span>
             </div>
         </div>
     </header>
@@ -149,8 +149,8 @@
                             <i class="fa-solid fa-signal"></i>
                         </div>
                         <div>
-                            <div class="text-xs text-slate-400">Đồng bộ máy chủ</div>
-                            <div class="text-sm font-bold text-slate-200" id="live-status-text">Hoạt động tốt</div>
+                            <div class="text-xs text-slate-400">Trạng thái hệ thống</div>
+                            <div class="text-sm font-bold text-slate-200" id="live-status-text">Đang sẵn sàng</div>
                         </div>
                     </div>
                 </div>
@@ -163,7 +163,7 @@
                 <i class="fa-solid fa-clock-rotate-left"></i> Hoạt động mới:
             </span>
             <div id="latest-activity-ticker" class="text-slate-300 truncate italic flex-1">
-                Đang kết nối để nhận thông báo mới nhất...
+                Đang nhận dữ liệu mới nhất...
             </div>
             <button onclick="toggleLogsModal()" class="text-xs text-slate-400 hover:text-emerald-400 underline flex-shrink-0">
                 Xem tất cả
@@ -188,10 +188,10 @@
 
             <!-- Members List Grid -->
             <div id="members-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                <!-- Loading Skeleton -->
+                <!-- Skeleton loader -->
                 <div class="glass-card p-5 rounded-2xl animate-pulse space-y-4">
                     <div class="flex items-center space-x-4">
-                        <div class="w-14 h-14 bg-slate-800 rounded-full"></div>
+                        <div class="w-14 h-14 bg-slate-800 rounded-2xl"></div>
                         <div class="flex-1 space-y-2">
                             <div class="h-4 bg-slate-800 rounded w-3/4"></div>
                             <div class="h-3 bg-slate-800 rounded w-1/2"></div>
@@ -234,7 +234,7 @@
 
             <!-- Docs List Grid -->
             <div id="docs-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <!-- Will be dynamically populated -->
+                <!-- Dynamically populated -->
             </div>
         </section>
 
@@ -256,7 +256,6 @@
 
             <!-- Task Kanban Columns -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                
                 <!-- TODO Column -->
                 <div class="bg-slate-900/50 border border-slate-800/80 rounded-2xl p-4 flex flex-col min-h-[450px]">
                     <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-800">
@@ -266,9 +265,7 @@
                         </div>
                         <span id="count-todo" class="px-2 py-0.5 bg-slate-800 text-slate-400 text-xs font-semibold rounded-full">0</span>
                     </div>
-                    <div id="col-todo" class="space-y-3 flex-1 overflow-y-auto max-h-[600px] pr-1">
-                        <!-- Items -->
-                    </div>
+                    <div id="col-todo" class="space-y-3 flex-1 overflow-y-auto max-h-[600px] pr-1"></div>
                 </div>
 
                 <!-- IN PROGRESS Column -->
@@ -280,9 +277,7 @@
                         </div>
                         <span id="count-inprogress" class="px-2 py-0.5 bg-slate-800 text-slate-400 text-xs font-semibold rounded-full">0</span>
                     </div>
-                    <div id="col-inprogress" class="space-y-3 flex-1 overflow-y-auto max-h-[600px] pr-1">
-                        <!-- Items -->
-                    </div>
+                    <div id="col-inprogress" class="space-y-3 flex-1 overflow-y-auto max-h-[600px] pr-1"></div>
                 </div>
 
                 <!-- DONE Column -->
@@ -294,14 +289,10 @@
                         </div>
                         <span id="count-done" class="px-2 py-0.5 bg-slate-800 text-slate-400 text-xs font-semibold rounded-full">0</span>
                     </div>
-                    <div id="col-done" class="space-y-3 flex-1 overflow-y-auto max-h-[600px] pr-1">
-                        <!-- Items -->
-                    </div>
+                    <div id="col-done" class="space-y-3 flex-1 overflow-y-auto max-h-[600px] pr-1"></div>
                 </div>
-
             </div>
         </section>
-
     </main>
 
     <!-- MODAL 1: ADD / EDIT MEMBER -->
@@ -330,7 +321,7 @@
                 <div>
                     <label class="block text-xs font-medium text-slate-300 mb-1">Đường dẫn ảnh đại diện (URL)</label>
                     <input type="url" id="member-avatar" placeholder="https://..." class="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
-                    <p class="text-[10px] text-slate-500 mt-1">Bỏ trống để sử dụng ảnh mặc định.</p>
+                    <p class="text-[10px] text-slate-500 mt-1">Bỏ trống để tự động tạo avatar chữ cái.</p>
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-slate-300 mb-1">Thông tin liên hệ (Email / SĐT)</label>
@@ -342,13 +333,15 @@
                 </div>
                 <div class="flex justify-end space-x-3 pt-2">
                     <button type="button" onclick="closeMemberModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-semibold rounded-xl">Hủy</button>
-                    <button type="submit" class="px-5 py-2 bg-emerald-500 hover:bg-emerald-600 text-slate-950 text-sm font-bold rounded-xl">Lưu lại</button>
+                    <button type="submit" id="save-member-btn" class="px-5 py-2 bg-emerald-500 hover:bg-emerald-600 text-slate-950 text-sm font-bold rounded-xl flex items-center gap-2">
+                        <span>Lưu thay đổi</span>
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- MODAL DELETE CONFIRMATION MODAL -->
+    <!-- MODAL DELETE CONFIRMATION -->
     <div id="delete-confirm-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm hidden">
         <div class="glass-card w-full max-w-sm rounded-2xl p-6 border border-slate-800 shadow-2xl relative text-center">
             <div class="w-12 h-12 rounded-full bg-red-500/10 border border-red-500/20 text-red-500 flex items-center justify-center mx-auto mb-4 text-xl">
@@ -376,6 +369,7 @@
             </button>
             <h3 id="doc-modal-title" class="text-lg font-bold text-white mb-4">Tải Lên / Thêm Tài Liệu Mới</h3>
             <form id="doc-form" onsubmit="saveDoc(event)" class="space-y-4">
+                <input type="hidden" id="doc-id">
                 <div>
                     <label class="block text-xs font-medium text-slate-300 mb-1">Tên tài liệu *</label>
                     <input type="text" id="doc-title" required placeholder="Nhập tên tài liệu, bài giảng..." class="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
@@ -480,12 +474,12 @@
                 </button>
             </div>
             <div id="logs-list" class="space-y-3 overflow-y-auto flex-1 pr-1">
-                <!-- Log items populated dynamically -->
+                <!-- Log items -->
             </div>
         </div>
     </div>
 
-    <!-- Firebase Modular Setup -->
+    <!-- Firebase Modular Setup & Logic Script -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -517,10 +511,10 @@
         let logsData = [];
         let currentDocFilter = 'all';
 
-        // Temporary target for member deletion confirmation
+        // Delete target state
         let memberToDeleteTarget = null;
 
-        // Fallback default sample members if collection is empty
+        // Default initial members sample
         const INITIAL_MEMBERS = [
             {
                 id: 'default-1',
@@ -542,13 +536,13 @@
             }
         ];
 
-        // Define Collection Paths strictly using Artifact Public Standard
+        // Strict Artifact Collection Paths
         const MEMBERS_COL = collection(db, 'artifacts', appId, 'public', 'data', 'members');
         const DOCS_COL = collection(db, 'artifacts', appId, 'public', 'data', 'docs');
         const TASKS_COL = collection(db, 'artifacts', appId, 'public', 'data', 'tasks');
         const LOGS_COL = collection(db, 'artifacts', appId, 'public', 'data', 'logs');
 
-        // Initial Authentication Setup
+        // Initial Auth Setup
         async function initAuth() {
             try {
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
@@ -557,67 +551,87 @@
                     await signInAnonymously(auth);
                 }
             } catch (err) {
-                console.error("Auth error:", err);
-                if (membersData.length === 0) {
-                    membersData = [...INITIAL_MEMBERS];
-                    renderMembers();
-                }
+                console.warn("Auth warning (using local mode):", err);
+                useLocalStorageFallback();
             }
+        }
+
+        function useLocalStorageFallback() {
+            document.getElementById('sync-status').textContent = 'Chế độ Local (Offline)';
+            document.getElementById('live-status-text').textContent = 'Đang lưu Cục bộ';
+            document.getElementById('user-id-display').textContent = 'Khách (Local)';
+            
+            const savedMembers = localStorage.getItem('nhom2_members');
+            membersData = savedMembers ? JSON.parse(savedMembers) : [...INITIAL_MEMBERS];
+            renderMembers();
+
+            const savedDocs = localStorage.getItem('nhom2_docs');
+            docsData = savedDocs ? JSON.parse(savedDocs) : [];
+            renderDocs();
+
+            const savedTasks = localStorage.getItem('nhom2_tasks');
+            tasksData = savedTasks ? JSON.parse(savedTasks) : [];
+            renderTasks();
+
+            const savedLogs = localStorage.getItem('nhom2_logs');
+            logsData = savedLogs ? JSON.parse(savedLogs) : [];
+            renderLogs();
         }
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 currentUser = user;
                 document.getElementById('sync-status').textContent = 'Đã kết nối Realtime';
+                document.getElementById('live-status-text').textContent = 'Realtime Hoạt động';
                 document.getElementById('user-id-display').textContent = user.uid.slice(0, 8) + '...';
                 startRealtimeListeners();
             } else {
-                document.getElementById('sync-status').textContent = 'Mất kết nối';
+                useLocalStorageFallback();
             }
         });
 
-        // Initialize listeners
         function startRealtimeListeners() {
             if (!currentUser) return;
 
-            // Members Listener
+            // Members Realtime
             onSnapshot(MEMBERS_COL, (snapshot) => {
                 const loaded = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 if (loaded.length === 0 && membersData.length === 0) {
                     membersData = [...INITIAL_MEMBERS];
-                } else if (loaded.length > 0) {
+                } else {
                     membersData = loaded;
                 }
+                localStorage.setItem('nhom2_members', JSON.stringify(membersData));
                 renderMembers();
             }, (error) => {
                 console.error("Members snapshot error:", error);
-                if (membersData.length === 0) {
-                    membersData = [...INITIAL_MEMBERS];
-                    renderMembers();
-                }
+                useLocalStorageFallback();
             });
 
-            // Docs Listener
+            // Docs Realtime
             onSnapshot(DOCS_COL, (snapshot) => {
                 docsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                localStorage.setItem('nhom2_docs', JSON.stringify(docsData));
                 renderDocs();
             }, (error) => console.error("Docs error:", error));
 
-            // Tasks Listener
+            // Tasks Realtime
             onSnapshot(TASKS_COL, (snapshot) => {
                 tasksData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                localStorage.setItem('nhom2_tasks', JSON.stringify(tasksData));
                 renderTasks();
             }, (error) => console.error("Tasks error:", error));
 
-            // Activity Logs Listener
+            // Activity Logs Realtime
             onSnapshot(LOGS_COL, (snapshot) => {
                 logsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 logsData.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+                localStorage.setItem('nhom2_logs', JSON.stringify(logsData));
                 renderLogs();
             }, (error) => console.error("Logs error:", error));
         }
 
-        // Add Log Helper
+        // Activity Logger
         async function logActivity(actionMessage) {
             const userTag = currentUser ? currentUser.uid.slice(0, 6) : 'Thành viên';
             const logObj = {
@@ -627,22 +641,27 @@
             };
 
             logsData.unshift(logObj);
+            localStorage.setItem('nhom2_logs', JSON.stringify(logsData));
             renderLogs();
 
-            try {
-                await addDoc(LOGS_COL, {
-                    message: actionMessage,
-                    user: userTag,
-                    createdAt: serverTimestamp()
-                });
-            } catch (e) {
-                console.error("Error logging activity to Firestore", e);
+            if (currentUser) {
+                try {
+                    await addDoc(LOGS_COL, {
+                        message: actionMessage,
+                        user: userTag,
+                        createdAt: serverTimestamp()
+                    });
+                } catch (e) {
+                    console.error("Error logging activity:", e);
+                }
             }
         }
 
         // Render Members
         function renderMembers() {
             const container = document.getElementById('members-grid');
+            if (!container) return;
+
             if (membersData.length === 0) {
                 container.innerHTML = `
                     <div class="col-span-full py-12 text-center text-slate-500 border border-dashed border-slate-800 rounded-2xl">
@@ -694,6 +713,8 @@
         // Render Docs
         function renderDocs() {
             const container = document.getElementById('docs-grid');
+            if (!container) return;
+
             const searchVal = (document.getElementById('doc-search')?.value || '').toLowerCase();
             
             let filtered = docsData.filter(d => {
@@ -752,6 +773,8 @@
             const colTodo = document.getElementById('col-todo');
             const colInprogress = document.getElementById('col-inprogress');
             const colDone = document.getElementById('col-done');
+
+            if (!colTodo) return;
 
             const todoTasks = tasksData.filter(t => t.status === 'todo');
             const inprogressTasks = tasksData.filter(t => t.status === 'inprogress');
@@ -847,40 +870,71 @@
             return (str || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
         }
 
-        // Member Handlers
+        // Member Handlers (Fixed Save logic with setDoc merge)
         window.saveMember = async function(e) {
             e.preventDefault();
             const id = document.getElementById('member-id').value;
-            const name = document.getElementById('member-name').value;
-            const role = document.getElementById('member-role').value;
-            const studentId = document.getElementById('member-student-id').value;
-            const avatar = document.getElementById('member-avatar').value;
-            const contact = document.getElementById('member-contact').value;
-            const desc = document.getElementById('member-desc').value;
+            const name = document.getElementById('member-name').value.trim();
+            const role = document.getElementById('member-role').value.trim();
+            const studentId = document.getElementById('member-student-id').value.trim();
+            const avatar = document.getElementById('member-avatar').value.trim();
+            const contact = document.getElementById('member-contact').value.trim();
+            const desc = document.getElementById('member-desc').value.trim();
+
+            const memberPayload = { name, role, studentId, avatar, contact, desc };
+
+            const saveBtn = document.getElementById('save-member-btn');
+            if (saveBtn) {
+                saveBtn.disabled = true;
+                saveBtn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> Đang lưu...`;
+            }
 
             try {
                 if (id) {
-                    const docRef = doc(MEMBERS_COL, id);
-                    await updateDoc(docRef, { name, role, studentId, avatar, contact, desc });
+                    // Fix Save issue: Use setDoc with { merge: true }
+                    if (currentUser && !id.startsWith('default-') && !id.startsWith('local-')) {
+                        const docRef = doc(MEMBERS_COL, id);
+                        await setDoc(docRef, memberPayload, { merge: true });
+                    }
+                    
+                    // Update local state instantly
                     const idx = membersData.findIndex(item => item.id === id);
-                    if (idx !== -1) membersData[idx] = { ...membersData[idx], name, role, studentId, avatar, contact, desc };
+                    if (idx !== -1) {
+                        membersData[idx] = { ...membersData[idx], ...memberPayload };
+                    }
                     await logActivity(`Đã cập nhật thông tin thành viên "${name}"`);
                 } else {
-                    const newDoc = await addDoc(MEMBERS_COL, { name, role, studentId, avatar, contact, desc, createdAt: serverTimestamp() });
-                    membersData.unshift({ id: newDoc.id, name, role, studentId, avatar, contact, desc });
+                    // Create new
+                    if (currentUser) {
+                        const newDoc = await addDoc(MEMBERS_COL, { ...memberPayload, createdAt: serverTimestamp() });
+                        membersData.unshift({ id: newDoc.id, ...memberPayload });
+                    } else {
+                        const tempId = 'local-' + Date.now();
+                        membersData.unshift({ id: tempId, ...memberPayload });
+                    }
                     await logActivity(`Đã thêm thành viên mới "${name}" (${role})`);
                 }
+
+                localStorage.setItem('nhom2_members', JSON.stringify(membersData));
                 renderMembers();
                 closeMemberModal();
             } catch (err) {
                 console.error("Save member error:", err);
-                if (!id) {
-                    const tempId = 'local-' + Date.now();
-                    membersData.unshift({ id: tempId, name, role, studentId, avatar, contact, desc });
-                    renderMembers();
-                    logActivity(`Đã thêm thành viên tạm thời "${name}"`);
+                // Fallback update local
+                if (id) {
+                    const idx = membersData.findIndex(item => item.id === id);
+                    if (idx !== -1) membersData[idx] = { ...membersData[idx], ...memberPayload };
+                } else {
+                    membersData.unshift({ id: 'local-' + Date.now(), ...memberPayload });
                 }
+                localStorage.setItem('nhom2_members', JSON.stringify(membersData));
+                renderMembers();
                 closeMemberModal();
+            } finally {
+                if (saveBtn) {
+                    saveBtn.disabled = false;
+                    saveBtn.innerHTML = `<span>Lưu thay đổi</span>`;
+                }
             }
         };
 
@@ -888,7 +942,7 @@
             const m = membersData.find(item => item.id === id);
             if (!m) return;
             document.getElementById('member-id').value = m.id;
-            document.getElementById('member-name').value = m.name;
+            document.getElementById('member-name').value = m.name || '';
             document.getElementById('member-role').value = m.role || '';
             document.getElementById('member-student-id').value = m.studentId || '';
             document.getElementById('member-avatar').value = m.avatar || '';
@@ -917,19 +971,20 @@
             confirmBtn.textContent = 'Đang xóa...';
 
             try {
-                if (id && !id.startsWith('default-') && !id.startsWith('local-')) {
+                if (currentUser && id && !id.startsWith('default-') && !id.startsWith('local-')) {
                     const memberDocRef = doc(MEMBERS_COL, id);
                     await deleteDoc(memberDocRef);
                 }
                 
                 membersData = membersData.filter(item => item.id !== id);
+                localStorage.setItem('nhom2_members', JSON.stringify(membersData));
                 renderMembers();
                 await logActivity(`Đã xóa thành viên "${name}" khỏi danh sách nhóm`);
             } catch (err) {
-                console.error("Error deleting member from Firestore:", err);
+                console.error("Error deleting member:", err);
                 membersData = membersData.filter(item => item.id !== id);
+                localStorage.setItem('nhom2_members', JSON.stringify(membersData));
                 renderMembers();
-                logActivity(`Đã xóa thành viên "${name}" (Local Sync)`);
             } finally {
                 confirmBtn.disabled = false;
                 confirmBtn.textContent = 'Xóa ngay';
@@ -940,25 +995,49 @@
         // Doc Handlers
         window.saveDoc = async function(e) {
             e.preventDefault();
-            const title = document.getElementById('doc-title').value;
+            const id = document.getElementById('doc-id').value;
+            const title = document.getElementById('doc-title').value.trim();
             const type = document.getElementById('doc-type').value;
-            const url = document.getElementById('doc-url').value;
-            const author = document.getElementById('doc-author').value;
-            const desc = document.getElementById('doc-desc').value;
+            const url = document.getElementById('doc-url').value.trim();
+            const author = document.getElementById('doc-author').value.trim();
+            const desc = document.getElementById('doc-desc').value.trim();
+
+            const payload = { title, type, url, author, desc };
 
             try {
-                await addDoc(DOCS_COL, { title, type, url, author, desc, createdAt: serverTimestamp() });
-                await logActivity(`Thành viên ${author} vừa tải lên tài liệu mới: "${title}"`);
+                if (id) {
+                    if (currentUser && !id.startsWith('local-')) {
+                        await setDoc(doc(DOCS_COL, id), payload, { merge: true });
+                    }
+                    const idx = docsData.findIndex(d => d.id === id);
+                    if (idx !== -1) docsData[idx] = { ...docsData[idx], ...payload };
+                    await logActivity(`Đã cập nhật tài liệu "${title}"`);
+                } else {
+                    if (currentUser) {
+                        const newDoc = await addDoc(DOCS_COL, { ...payload, createdAt: serverTimestamp() });
+                        docsData.unshift({ id: newDoc.id, ...payload });
+                    } else {
+                        docsData.unshift({ id: 'local-' + Date.now(), ...payload });
+                    }
+                    await logActivity(`Thành viên ${author} đã thêm tài liệu mới: "${title}"`);
+                }
+
+                localStorage.setItem('nhom2_docs', JSON.stringify(docsData));
+                renderDocs();
                 closeDocModal();
             } catch (err) {
                 console.error("Save doc error:", err);
+                closeDocModal();
             }
         };
 
         window.deleteDoc = async function(id, title) {
             try {
-                await deleteDoc(doc(DOCS_COL, id));
+                if (currentUser && !id.startsWith('local-')) {
+                    await deleteDoc(doc(DOCS_COL, id));
+                }
                 docsData = docsData.filter(d => d.id !== id);
+                localStorage.setItem('nhom2_docs', JSON.stringify(docsData));
                 renderDocs();
                 await logActivity(`Đã xóa tài liệu "${title}"`);
             } catch (err) {
@@ -986,25 +1065,40 @@
         window.saveTask = async function(e) {
             e.preventDefault();
             const id = document.getElementById('task-id').value;
-            const title = document.getElementById('task-title').value;
-            const assignee = document.getElementById('task-assignee').value;
+            const title = document.getElementById('task-title').value.trim();
+            const assignee = document.getElementById('task-assignee').value.trim();
             const due = document.getElementById('task-due').value;
-            const desc = document.getElementById('task-desc').value;
+            const desc = document.getElementById('task-desc').value.trim();
             const status = document.getElementById('task-status').value;
-            const submissionLink = document.getElementById('task-submission-link').value;
-            const submissionNote = document.getElementById('task-submission-note').value;
+            const submissionLink = document.getElementById('task-submission-link').value.trim();
+            const submissionNote = document.getElementById('task-submission-note').value.trim();
+
+            const payload = { title, assignee, due, desc, status, submissionLink, submissionNote };
 
             try {
                 if (id) {
-                    await updateDoc(doc(TASKS_COL, id), { title, assignee, due, desc, status, submissionLink, submissionNote });
-                    await logActivity(`Đã cập nhật bài tập/tiến độ: "${title}" (${status})`);
+                    if (currentUser && !id.startsWith('local-')) {
+                        await setDoc(doc(TASKS_COL, id), payload, { merge: true });
+                    }
+                    const idx = tasksData.findIndex(t => t.id === id);
+                    if (idx !== -1) tasksData[idx] = { ...tasksData[idx], ...payload };
+                    await logActivity(`Đã cập nhật bài tập: "${title}" (${status})`);
                 } else {
-                    await addDoc(TASKS_COL, { title, assignee, due, desc, status, submissionLink, submissionNote, createdAt: serverTimestamp() });
-                    await logActivity(`Đã giao bài tập mới "${title}" cho ${assignee}`);
+                    if (currentUser) {
+                        const newDoc = await addDoc(TASKS_COL, { ...payload, createdAt: serverTimestamp() });
+                        tasksData.unshift({ id: newDoc.id, ...payload });
+                    } else {
+                        tasksData.unshift({ id: 'local-' + Date.now(), ...payload });
+                    }
+                    await logActivity(`Đã tạo bài tập mới "${title}" cho ${assignee || 'Nhóm'}`);
                 }
+
+                localStorage.setItem('nhom2_tasks', JSON.stringify(tasksData));
+                renderTasks();
                 closeTaskModal();
             } catch (err) {
                 console.error("Save task error:", err);
+                closeTaskModal();
             }
         };
 
@@ -1012,7 +1106,7 @@
             const t = tasksData.find(item => item.id === id);
             if (!t) return;
             document.getElementById('task-id').value = t.id;
-            document.getElementById('task-title').value = t.title;
+            document.getElementById('task-title').value = t.title || '';
             document.getElementById('task-assignee').value = t.assignee || '';
             document.getElementById('task-due').value = t.due || '';
             document.getElementById('task-desc').value = t.desc || '';
@@ -1025,8 +1119,11 @@
 
         window.deleteTask = async function(id, title) {
             try {
-                await deleteDoc(doc(TASKS_COL, id));
+                if (currentUser && !id.startsWith('local-')) {
+                    await deleteDoc(doc(TASKS_COL, id));
+                }
                 tasksData = tasksData.filter(t => t.id !== id);
+                localStorage.setItem('nhom2_tasks', JSON.stringify(tasksData));
                 renderTasks();
                 await logActivity(`Đã xóa bài tập "${title}"`);
             } catch (err) {
@@ -1038,7 +1135,7 @@
     </script>
 
     <script>
-        // Navigation Tab Switching Logic
+        // Navigation Tab Switching
         function switchTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
             
@@ -1064,7 +1161,7 @@
             }
         }
 
-        // Modal Controls
+        // Modal Toggle Controllers
         function openMemberModal() {
             document.getElementById('member-form').reset();
             document.getElementById('member-id').value = '';
@@ -1077,6 +1174,8 @@
 
         function openDocModal() {
             document.getElementById('doc-form').reset();
+            document.getElementById('doc-id').value = '';
+            document.getElementById('doc-modal-title').textContent = 'Tải Lên / Thêm Tài Liệu Mới';
             document.getElementById('doc-modal').classList.remove('hidden');
         }
         function closeDocModal() {
