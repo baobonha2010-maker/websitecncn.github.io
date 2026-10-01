@@ -488,15 +488,14 @@
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Global Firebase Configuration fallback
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
-            apiKey: "demo-api-key",
-            authDomain: "demo-app.firebaseapp.com",
-            projectId: "demo-app",
-            storageBucket: "demo-app.appspot.com",
-            messagingSenderId: "123456789",
-            appId: "1:123456789:web:123456789"
+        const firebaseConfig = {
+            apiKey: "AIzaSy...",
+            authDomain: "ten-du-an-cua-ban.firebaseapp.com",
+            projectId: "ten-du-an-cua-ban",
+            storageBucket: "ten-du-an-cua-ban.appspot.com",
+            messagingSenderId: "123456789012",
+            appId: "1:123456789012:web:abc123def456"
         };
-
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'nhom2-app-portal';
 
         // Initialize Firebase
