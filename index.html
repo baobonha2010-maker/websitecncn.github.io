@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NHÓM 2 - Workspace Realtime Portal</title>
-    <!-- Tailwind CSS CDN -->a
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -311,7 +311,7 @@
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-medium text-slate-300 mb-1">Vai Trò Trong Nhóm *</label>
-                        <input type="text" id="member-role" required placeholder="Nhóm trưởng, Dev..." class="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
+                        <input type="text" id="member-role" required placeholder="Thành viên, Leader..." class="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
                     </div>
                     <div>
                         <label class="block text-xs font-medium text-slate-300 mb-1">Mã Số Sinh Viên (MSSV)</label>
@@ -324,12 +324,12 @@
                     <p class="text-[10px] text-slate-500 mt-1">Bỏ trống để tự động tạo avatar chữ cái.</p>
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1">Thông tin liên hệ (Email / SĐT)</label>
-                    <input type="text" id="member-contact" placeholder="Email hoặc số điện thoại..." class="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Thông tin liên hệ (Email / SĐT / ID)</label>
+                    <input type="text" id="member-contact" placeholder="Số điện thoại / ID..." class="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1">Công việc đảm nhận / Ghi chú</label>
-                    <textarea id="member-desc" rows="2" placeholder="Ghi chú về công việc, nhiệm vụ chính..." class="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-emerald-500"></textarea>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Điểm mạnh / Điểm yếu / Ghi chú</label>
+                    <textarea id="member-desc" rows="2" placeholder="Ghi chú thêm..." class="w-full px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-emerald-500"></textarea>
                 </div>
                 <div class="flex justify-end space-x-3 pt-2">
                     <button type="button" onclick="closeMemberModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-semibold rounded-xl">Hủy</button>
@@ -488,15 +488,14 @@
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Global Firebase Configuration fallback
-        const firebaseConfig = {
-            apiKey: "AIzaSy...",
-            authDomain: "ten-du-an-cua-ban.firebaseapp.com",
-            projectId: "ten-du-an-cua-ban",
-            storageBucket: "ten-du-an-cua-ban.appspot.com",
-            messagingSenderId: "123456789012",
-            appId: "1:123456789012:web:abc123def456"
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+            apiKey: "demo-api-key",
+            authDomain: "demo-app.firebaseapp.com",
+            projectId: "demo-app",
+            storageBucket: "demo-app.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "1:123456789:web:123456789"
         };
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'nhom2-app-portal';
 
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
@@ -513,33 +512,11 @@
         // Delete target state
         let memberToDeleteTarget = null;
 
-        // Default initial members sample
-        const INITIAL_MEMBERS = [
-            {
-                id: 'default-1',
-                name: 'Nguyễn Văn An',
-                role: 'Nhóm trưởng',
-                studentId: '21120001',
-                avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
-                contact: 'an.nguyen@nhom2.edu.vn',
-                desc: 'Phụ trách điều phối công việc và quản lý tiến độ tổng thể của nhóm.'
-            },
-            {
-                id: 'default-2',
-                name: 'Trần Thị Bích',
-                role: 'UI/UX Designer',
-                studentId: '21120002',
-                avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80',
-                contact: 'bich.tran@nhom2.edu.vn',
-                desc: 'Thiết kế giao diện người dùng và tạo tài liệu thuyết trình.'
-            }
-        ];
-
-        // Strict Artifact Collection Paths
-        const MEMBERS_COL = collection(db, 'artifacts', appId, 'public', 'data', 'members');
-        const DOCS_COL = collection(db, 'artifacts', appId, 'public', 'data', 'docs');
-        const TASKS_COL = collection(db, 'artifacts', appId, 'public', 'data', 'tasks');
-        const LOGS_COL = collection(db, 'artifacts', appId, 'public', 'data', 'logs');
+        // TÊN BỘ SƯU TẬP (COLLECTION) CHÍNH XÁC THEO TRÊN FIREBASE CONSOLE
+        const MEMBERS_COL = collection(db, 'thành viên');
+        const DOCS_COL = collection(db, 'tài liệu');
+        const TASKS_COL = collection(db, 'bài tập');
+        const LOGS_COL = collection(db, 'nhật ký');
 
         // Initial Auth Setup
         async function initAuth() {
@@ -561,7 +538,7 @@
             document.getElementById('user-id-display').textContent = 'Khách (Local)';
             
             const savedMembers = localStorage.getItem('nhom2_members');
-            membersData = savedMembers ? JSON.parse(savedMembers) : [...INITIAL_MEMBERS];
+            membersData = savedMembers ? JSON.parse(savedMembers) : [];
             renderMembers();
 
             const savedDocs = localStorage.getItem('nhom2_docs');
@@ -594,12 +571,7 @@
 
             // Members Realtime
             onSnapshot(MEMBERS_COL, (snapshot) => {
-                const loaded = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                if (loaded.length === 0 && membersData.length === 0) {
-                    membersData = [...INITIAL_MEMBERS];
-                } else {
-                    membersData = loaded;
-                }
+                membersData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 localStorage.setItem('nhom2_members', JSON.stringify(membersData));
                 renderMembers();
             }, (error) => {
@@ -656,7 +628,7 @@
             }
         }
 
-        // Render Members
+        // Render Members - Hỗ trợ cả thuộc tính tiếng Việt & tiếng Anh
         function renderMembers() {
             const container = document.getElementById('members-grid');
             if (!container) return;
@@ -670,28 +642,37 @@
                 return;
             }
 
-            container.innerHTML = membersData.map(m => `
+            container.innerHTML = membersData.map(m => {
+                // Đọc linh hoạt các trường tên theo dữ liệu Firebase
+                const name = m.tên || m.name || 'Không tên';
+                const role = m['vai trò'] || m.role || 'Thành viên';
+                const studentId = m.mssv || m.studentId || '';
+                const avatar = m['hình đại diện'] || m.avatar || '';
+                const contact = m['nhận dạng'] || m.contact || '';
+                const desc = m['hữu cơ'] || m.desc || '';
+
+                return `
                 <div class="glass-card p-5 rounded-2xl relative group hover:border-emerald-500/50 transition-all duration-300">
                     <div class="absolute top-3.5 right-3.5 flex items-center space-x-1.5 z-10">
                         <button onclick="editMember('${m.id}')" title="Sửa thông tin" class="p-2 text-slate-400 hover:text-emerald-400 bg-slate-900/80 hover:bg-slate-800 rounded-xl border border-slate-800 transition">
                             <i class="fa-solid fa-pen text-xs"></i>
                         </button>
-                        <button onclick="promptDeleteMember('${m.id}', '${escapeHtml(m.name)}')" title="Xóa thành viên" class="p-2 text-red-400/80 hover:text-red-400 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 rounded-xl transition">
+                        <button onclick="promptDeleteMember('${m.id}', '${escapeHtml(name)}')" title="Xóa thành viên" class="p-2 text-red-400/80 hover:text-red-400 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 rounded-xl transition">
                             <i class="fa-solid fa-trash-can text-xs"></i>
                         </button>
                     </div>
                     <div class="flex items-start space-x-4">
-                        <img src="${m.avatar || 'https://placehold.co/150/1e293b/10b981?text=' + encodeURIComponent(m.name ? m.name.charAt(0) : 'N')}" 
+                        <img src="${avatar || 'https://placehold.co/150/1e293b/10b981?text=' + encodeURIComponent(name.charAt(0))}" 
                              onerror="this.src='https://placehold.co/150/1e293b/10b981?text=N2'"
                              class="w-14 h-14 rounded-2xl object-cover border-2 border-slate-700/80 shadow-md">
                         <div class="flex-1 min-w-0 pr-16">
-                            <h4 class="font-bold text-white text-base truncate">${m.name}</h4>
+                            <h4 class="font-bold text-white text-base truncate">${name}</h4>
                             <div class="flex flex-wrap items-center gap-1.5 mt-1">
                                 <span class="inline-block px-2.5 py-0.5 text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-md">
-                                    ${m.role || 'Thành viên'}
+                                    ${role}
                                 </span>
-                                ${m.studentId ? `<span class="inline-block px-2 py-0.5 text-[10px] font-mono text-slate-400 bg-slate-800 border border-slate-700/50 rounded-md">
-                                    MSSV: ${m.studentId}
+                                ${studentId ? `<span class="inline-block px-2 py-0.5 text-[10px] font-mono text-slate-400 bg-slate-800 border border-slate-700/50 rounded-md">
+                                    MSSV: ${studentId}
                                 </span>` : ''}
                             </div>
                         </div>
@@ -699,14 +680,14 @@
                     <div class="mt-4 pt-3 border-t border-slate-800/80 space-y-1.5 text-xs">
                         <p class="text-slate-300 flex items-center gap-2 truncate">
                             <i class="fa-regular fa-envelope text-slate-500"></i>
-                            <span>${m.contact || 'Chưa cập nhật liên hệ'}</span>
+                            <span>${contact || 'Chưa cập nhật liên hệ'}</span>
                         </p>
                         <p class="text-slate-400 italic text-[11px] line-clamp-2">
-                            "${m.desc || 'Thành viên tích cực của Nhóm 2.'}"
+                            "${desc || 'Thành viên tích cực của Nhóm 2.'}"
                         </p>
                     </div>
-                </div>
-            `).join('');
+                </div>`;
+            }).join('');
         }
 
         // Render Docs
@@ -717,8 +698,12 @@
             const searchVal = (document.getElementById('doc-search')?.value || '').toLowerCase();
             
             let filtered = docsData.filter(d => {
-                const matchesType = currentDocFilter === 'all' || d.type === currentDocFilter;
-                const matchesSearch = d.title.toLowerCase().includes(searchVal) || (d.author && d.author.toLowerCase().includes(searchVal));
+                const title = d['tên tài liệu'] || d.title || '';
+                const author = d['người đăng'] || d.author || '';
+                const type = d['loại'] || d.type || 'Link';
+
+                const matchesType = currentDocFilter === 'all' || type === currentDocFilter;
+                const matchesSearch = title.toLowerCase().includes(searchVal) || author.toLowerCase().includes(searchVal);
                 return matchesType && matchesSearch;
             });
 
@@ -739,7 +724,13 @@
             };
 
             container.innerHTML = filtered.map(d => {
-                const style = iconMap[d.type] || iconMap['Link'];
+                const title = d['tên tài liệu'] || d.title || 'Tài liệu';
+                const author = d['người đăng'] || d.author || 'Ẩn danh';
+                const type = d['loại'] || d.type || 'Link';
+                const url = d['đường dẫn'] || d.url || '#';
+                const desc = d['ghi chú'] || d.desc || 'Không có mô tả.';
+
+                const style = iconMap[type] || iconMap['Link'];
                 return `
                 <div class="glass-card p-4 rounded-2xl flex flex-col justify-between hover:border-slate-700 transition">
                     <div>
@@ -747,18 +738,18 @@
                             <div class="p-3 rounded-xl ${style.bg} ${style.color}">
                                 <i class="fa-solid ${style.icon} text-xl"></i>
                             </div>
-                            <button onclick="deleteDoc('${d.id}', '${escapeHtml(d.title)}')" class="text-slate-500 hover:text-red-400 p-1 text-xs">
+                            <button onclick="deleteDoc('${d.id}', '${escapeHtml(title)}')" class="text-slate-500 hover:text-red-400 p-1 text-xs">
                                 <i class="fa-solid fa-trash"></i>
                             </button>
                         </div>
-                        <h4 class="font-bold text-white text-sm line-clamp-2 mb-1">${d.title}</h4>
-                        <p class="text-xs text-slate-400 line-clamp-2 mb-3">${d.desc || 'Không có mô tả.'}</p>
+                        <h4 class="font-bold text-white text-sm line-clamp-2 mb-1">${title}</h4>
+                        <p class="text-xs text-slate-400 line-clamp-2 mb-3">${desc}</p>
                     </div>
                     <div class="pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs">
                         <span class="text-slate-500 font-medium truncate max-w-[120px]">
-                            <i class="fa-solid fa-user-circle mr-1"></i>${d.author || 'Ẩn danh'}
+                            <i class="fa-solid fa-user-circle mr-1"></i>${author}
                         </span>
-                        <a href="${d.url}" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 bg-slate-800 hover:bg-emerald-500 hover:text-slate-950 text-emerald-400 font-semibold rounded-lg transition flex items-center gap-1.5">
+                        <a href="${url}" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 bg-slate-800 hover:bg-emerald-500 hover:text-slate-950 text-emerald-400 font-semibold rounded-lg transition flex items-center gap-1.5">
                             <span>Mở tài liệu</span>
                             <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
                         </a>
@@ -775,9 +766,9 @@
 
             if (!colTodo) return;
 
-            const todoTasks = tasksData.filter(t => t.status === 'todo');
-            const inprogressTasks = tasksData.filter(t => t.status === 'inprogress');
-            const doneTasks = tasksData.filter(t => t.status === 'done');
+            const todoTasks = tasksData.filter(t => (t['trạng thái'] || t.status) === 'todo');
+            const inprogressTasks = tasksData.filter(t => (t['trạng thái'] || t.status) === 'inprogress');
+            const doneTasks = tasksData.filter(t => (t['trạng thái'] || t.status) === 'done');
 
             document.getElementById('count-todo').textContent = todoTasks.length;
             document.getElementById('count-inprogress').textContent = inprogressTasks.length;
@@ -793,39 +784,47 @@
                 return `<div class="p-4 text-center text-xs text-slate-600 border border-dashed border-slate-800/60 rounded-xl">Chưa có bài tập</div>`;
             }
 
-            return tasks.map(t => `
+            return tasks.map(t => {
+                const title = t['tên bài tập'] || t.title || 'Nhiệm vụ';
+                const assignee = t['người đảm nhận'] || t.assignee || 'Chưa giao';
+                const due = t['hạn nộp'] || t.due || '';
+                const desc = t['mô tả'] || t.desc || '';
+                const submissionLink = t['tệp nộp'] || t.submissionLink || '';
+                const submissionNote = t['ghi chú nộp'] || t.submissionNote || '';
+
+                return `
                 <div class="glass-card p-3.5 rounded-xl border border-slate-800/80 space-y-2 relative group hover:border-emerald-500/40 transition">
                     <div class="flex items-start justify-between gap-2">
-                        <h5 class="font-bold text-slate-100 text-sm leading-snug">${t.title}</h5>
+                        <h5 class="font-bold text-slate-100 text-sm leading-snug">${title}</h5>
                         <div class="flex space-x-1 flex-shrink-0">
                             <button onclick="editTask('${t.id}')" class="p-1 text-slate-400 hover:text-emerald-400 text-xs">
                                 <i class="fa-solid fa-pen"></i>
                             </button>
-                            <button onclick="deleteTask('${t.id}', '${escapeHtml(t.title)}')" class="p-1 text-slate-400 hover:text-red-400 text-xs">
+                            <button onclick="deleteTask('${t.id}', '${escapeHtml(title)}')" class="p-1 text-slate-400 hover:text-red-400 text-xs">
                                 <i class="fa-solid fa-trash"></i>
                             </button>
                         </div>
                     </div>
-                    ${t.desc ? `<p class="text-xs text-slate-400 line-clamp-2">${t.desc}</p>` : ''}
+                    ${desc ? `<p class="text-xs text-slate-400 line-clamp-2">${desc}</p>` : ''}
                     
                     <div class="flex items-center justify-between text-[11px] text-slate-400 pt-1">
                         <span class="bg-slate-800 px-2 py-0.5 rounded text-slate-300 font-medium">
-                            <i class="fa-solid fa-user text-[10px] mr-1"></i>${t.assignee || 'Chưa giao'}
+                            <i class="fa-solid fa-user text-[10px] mr-1"></i>${assignee}
                         </span>
-                        ${t.due ? `<span class="text-amber-400"><i class="fa-solid fa-calendar-day mr-1"></i>${t.due}</span>` : ''}
+                        ${due ? `<span class="text-amber-400"><i class="fa-solid fa-calendar-day mr-1"></i>${due}</span>` : ''}
                     </div>
 
-                    ${t.submissionLink ? `
+                    ${submissionLink ? `
                         <div class="mt-2 pt-2 border-t border-slate-800/80 bg-emerald-500/5 p-2 rounded-lg">
                             <div class="text-[10px] font-bold text-emerald-400 flex items-center justify-between">
                                 <span><i class="fa-solid fa-circle-check mr-1"></i>Bài làm đã nộp</span>
-                                <a href="${t.submissionLink}" target="_blank" class="underline hover:text-emerald-300">Xem tệp</a>
+                                <a href="${submissionLink}" target="_blank" class="underline hover:text-emerald-300">Xem tệp</a>
                             </div>
-                            ${t.submissionNote ? `<p class="text-[11px] text-slate-300 italic mt-0.5">"${t.submissionNote}"</p>` : ''}
+                            ${submissionNote ? `<p class="text-[11px] text-slate-300 italic mt-0.5">"${submissionNote}"</p>` : ''}
                         </div>
                     ` : ''}
-                </div>
-            `).join('');
+                </div>`;
+            }).join('');
         }
 
         // Render Activity Logs
@@ -851,7 +850,7 @@
             listEl.innerHTML = logsData.map(l => `
                 <div class="p-3 bg-slate-900/80 border border-slate-800 rounded-xl text-xs space-y-1">
                     <div class="flex items-center justify-between text-slate-400">
-                        <span class="font-bold text-emerald-400">User ${l.user}</span>
+                        <span class="font-bold text-emerald-400">User ${l.user || 'Ẩn danh'}</span>
                         <span class="text-[10px] text-slate-500">${formatTime(l.createdAt)}</span>
                     </div>
                     <p class="text-slate-200 font-medium">${l.message}</p>
@@ -869,7 +868,7 @@
             return (str || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
         }
 
-        // Member Handlers (Fixed Save logic with setDoc merge)
+        // Member Handlers - Đồng bộ lưu cả 2 kiểu key
         window.saveMember = async function(e) {
             e.preventDefault();
             const id = document.getElementById('member-id').value;
@@ -880,7 +879,14 @@
             const contact = document.getElementById('member-contact').value.trim();
             const desc = document.getElementById('member-desc').value.trim();
 
-            const memberPayload = { name, role, studentId, avatar, contact, desc };
+            const memberPayload = { 
+                'tên': name, name,
+                'vai trò': role, role,
+                'mssv': studentId, studentId,
+                'hình đại diện': avatar, avatar,
+                'nhận dạng': contact, contact,
+                'hữu cơ': desc, desc
+            };
 
             const saveBtn = document.getElementById('save-member-btn');
             if (saveBtn) {
@@ -890,20 +896,17 @@
 
             try {
                 if (id) {
-                    // Fix Save issue: Use setDoc with { merge: true }
-                    if (currentUser && !id.startsWith('default-') && !id.startsWith('local-')) {
+                    if (currentUser && !id.startsWith('local-')) {
                         const docRef = doc(MEMBERS_COL, id);
                         await setDoc(docRef, memberPayload, { merge: true });
                     }
                     
-                    // Update local state instantly
                     const idx = membersData.findIndex(item => item.id === id);
                     if (idx !== -1) {
                         membersData[idx] = { ...membersData[idx], ...memberPayload };
                     }
                     await logActivity(`Đã cập nhật thông tin thành viên "${name}"`);
                 } else {
-                    // Create new
                     if (currentUser) {
                         const newDoc = await addDoc(MEMBERS_COL, { ...memberPayload, createdAt: serverTimestamp() });
                         membersData.unshift({ id: newDoc.id, ...memberPayload });
@@ -919,15 +922,6 @@
                 closeMemberModal();
             } catch (err) {
                 console.error("Save member error:", err);
-                // Fallback update local
-                if (id) {
-                    const idx = membersData.findIndex(item => item.id === id);
-                    if (idx !== -1) membersData[idx] = { ...membersData[idx], ...memberPayload };
-                } else {
-                    membersData.unshift({ id: 'local-' + Date.now(), ...memberPayload });
-                }
-                localStorage.setItem('nhom2_members', JSON.stringify(membersData));
-                renderMembers();
                 closeMemberModal();
             } finally {
                 if (saveBtn) {
@@ -941,12 +935,12 @@
             const m = membersData.find(item => item.id === id);
             if (!m) return;
             document.getElementById('member-id').value = m.id;
-            document.getElementById('member-name').value = m.name || '';
-            document.getElementById('member-role').value = m.role || '';
-            document.getElementById('member-student-id').value = m.studentId || '';
-            document.getElementById('member-avatar').value = m.avatar || '';
-            document.getElementById('member-contact').value = m.contact || '';
-            document.getElementById('member-desc').value = m.desc || '';
+            document.getElementById('member-name').value = m.tên || m.name || '';
+            document.getElementById('member-role').value = m['vai trò'] || m.role || '';
+            document.getElementById('member-student-id').value = m.mssv || m.studentId || '';
+            document.getElementById('member-avatar').value = m['hình đại diện'] || m.avatar || '';
+            document.getElementById('member-contact').value = m['nhận dạng'] || m.contact || '';
+            document.getElementById('member-desc').value = m['hữu cơ'] || m.desc || '';
             document.getElementById('member-modal-title').textContent = 'Sửa Thông Tin Thành Viên';
             document.getElementById('member-modal').classList.remove('hidden');
         };
@@ -970,7 +964,7 @@
             confirmBtn.textContent = 'Đang xóa...';
 
             try {
-                if (currentUser && id && !id.startsWith('default-') && !id.startsWith('local-')) {
+                if (currentUser && id && !id.startsWith('local-')) {
                     const memberDocRef = doc(MEMBERS_COL, id);
                     await deleteDoc(memberDocRef);
                 }
@@ -981,9 +975,6 @@
                 await logActivity(`Đã xóa thành viên "${name}" khỏi danh sách nhóm`);
             } catch (err) {
                 console.error("Error deleting member:", err);
-                membersData = membersData.filter(item => item.id !== id);
-                localStorage.setItem('nhom2_members', JSON.stringify(membersData));
-                renderMembers();
             } finally {
                 confirmBtn.disabled = false;
                 confirmBtn.textContent = 'Xóa ngay';
@@ -1001,7 +992,13 @@
             const author = document.getElementById('doc-author').value.trim();
             const desc = document.getElementById('doc-desc').value.trim();
 
-            const payload = { title, type, url, author, desc };
+            const payload = { 
+                'tên tài liệu': title, title,
+                'loại': type, type,
+                'đường dẫn': url, url,
+                'người đăng': author, author,
+                'ghi chú': desc, desc
+            };
 
             try {
                 if (id) {
@@ -1072,7 +1069,15 @@
             const submissionLink = document.getElementById('task-submission-link').value.trim();
             const submissionNote = document.getElementById('task-submission-note').value.trim();
 
-            const payload = { title, assignee, due, desc, status, submissionLink, submissionNote };
+            const payload = { 
+                'tên bài tập': title, title,
+                'người đảm nhận': assignee, assignee,
+                'hạn nộp': due, due,
+                'mô tả': desc, desc,
+                'trạng thái': status, status,
+                'tệp nộp': submissionLink, submissionLink,
+                'ghi chú nộp': submissionNote, submissionNote
+            };
 
             try {
                 if (id) {
@@ -1105,13 +1110,13 @@
             const t = tasksData.find(item => item.id === id);
             if (!t) return;
             document.getElementById('task-id').value = t.id;
-            document.getElementById('task-title').value = t.title || '';
-            document.getElementById('task-assignee').value = t.assignee || '';
-            document.getElementById('task-due').value = t.due || '';
-            document.getElementById('task-desc').value = t.desc || '';
-            document.getElementById('task-status').value = t.status || 'todo';
-            document.getElementById('task-submission-link').value = t.submissionLink || '';
-            document.getElementById('task-submission-note').value = t.submissionNote || '';
+            document.getElementById('task-title').value = t['tên bài tập'] || t.title || '';
+            document.getElementById('task-assignee').value = t['người đảm nhận'] || t.assignee || '';
+            document.getElementById('task-due').value = t['hạn nộp'] || t.due || '';
+            document.getElementById('task-desc').value = t['mô tả'] || t.desc || '';
+            document.getElementById('task-status').value = t['trạng thái'] || t.status || 'todo';
+            document.getElementById('task-submission-link').value = t['tệp nộp'] || t.submissionLink || '';
+            document.getElementById('task-submission-note').value = t['ghi chú nộp'] || t.submissionNote || '';
             document.getElementById('task-modal-title').textContent = 'Sửa / Nộp Bài Tập';
             document.getElementById('task-modal').classList.remove('hidden');
         };
