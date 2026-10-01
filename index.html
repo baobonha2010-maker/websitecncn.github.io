@@ -487,14 +487,16 @@
             getFirestore, collection, doc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot, serverTimestamp 
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Global Firebase Configuration fallback
+        // =========================================================
+        // VỊ TRÍ CẦN BỎ THÔNG TIN CONFIG THẬT CỦA BẠN VÀO ĐÂY:
+        // =========================================================
         const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
-            apiKey: "demo-api-key",
-            authDomain: "demo-app.firebaseapp.com",
-            projectId: "demo-app",
-            storageBucket: "demo-app.appspot.com",
-            messagingSenderId: "123456789",
-            appId: "1:123456789:web:123456789"
+            apiKey: "YOUR_ACTUAL_API_KEY",
+            authDomain: "Website-Nhom2.firebaseapp.com",
+            projectId: "Website-Nhom2",
+            storageBucket: "Website-Nhom2.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
         };
 
         // Initialize Firebase
@@ -596,19 +598,24 @@
             // Activity Logs Realtime
             onSnapshot(LOGS_COL, (snapshot) => {
                 logsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                logsData.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+                logsData.sort((a, b) => {
+                    const tA = a['dấu thời gian']?.seconds || a.createdAt?.seconds || 0;
+                    const tB = b['dấu thời gian']?.seconds || b.createdAt?.seconds || 0;
+                    return tB - tA;
+                });
                 localStorage.setItem('nhom2_logs', JSON.stringify(logsData));
                 renderLogs();
             }, (error) => console.error("Logs error:", error));
         }
 
-        // Activity Logger
+        // Activity Logger (Hỗ trợ cấu trúc lưu cả trường tiếng Việt và tiếng Anh)
         async function logActivity(actionMessage) {
             const userTag = currentUser ? currentUser.uid.slice(0, 6) : 'Thành viên';
             const logObj = {
+                'chữ': actionMessage,
                 message: actionMessage,
                 user: userTag,
-                createdAt: { seconds: Math.floor(Date.now() / 1000) }
+                'dấu thời gian': { seconds: Math.floor(Date.now() / 1000) }
             };
 
             logsData.unshift(logObj);
@@ -618,12 +625,12 @@
             if (currentUser) {
                 try {
                     await addDoc(LOGS_COL, {
-                        message: actionMessage,
+                        'chữ': actionMessage,
                         user: userTag,
-                        createdAt: serverTimestamp()
+                        'dấu thời gian': serverTimestamp()
                     });
                 } catch (e) {
-                    console.error("Error logging activity:", e);
+                    console.error("Lỗi khi ghi nhật ký:", e);
                 }
             }
         }
@@ -643,7 +650,6 @@
             }
 
             container.innerHTML = membersData.map(m => {
-                // Đọc linh hoạt các trường tên theo dữ liệu Firebase
                 const name = m.tên || m.name || 'Không tên';
                 const role = m['vai trò'] || m.role || 'Thành viên';
                 const studentId = m.mssv || m.studentId || '';
@@ -827,14 +833,16 @@
             }).join('');
         }
 
-        // Render Activity Logs
+        // Render Activity Logs (Đọc tốt các trường 'chữ' và 'dấu thời gian')
         function renderLogs() {
             const listEl = document.getElementById('logs-list');
             const tickerEl = document.getElementById('latest-activity-ticker');
 
             if (tickerEl) {
                 if (logsData.length > 0) {
-                    tickerEl.textContent = `${logsData[0].message} (${formatTime(logsData[0].createdAt)})`;
+                    const firstMsg = logsData[0].chữ || logsData[0].message || 'Hoạt động mới';
+                    const firstTime = logsData[0]['dấu thời gian'] || logsData[0].createdAt;
+                    tickerEl.textContent = `${firstMsg} (${formatTime(firstTime)})`;
                 } else {
                     tickerEl.textContent = 'Trang web đã sẵn sàng hoạt động.';
                 }
@@ -847,19 +855,25 @@
                 return;
             }
 
-            listEl.innerHTML = logsData.map(l => `
+            listEl.innerHTML = logsData.map(l => {
+                const msg = l.chữ || l.message || 'Không có nội dung';
+                const time = l['dấu thời gian'] || l.createdAt;
+                const user = l.user || 'Hệ thống';
+
+                return `
                 <div class="p-3 bg-slate-900/80 border border-slate-800 rounded-xl text-xs space-y-1">
                     <div class="flex items-center justify-between text-slate-400">
-                        <span class="font-bold text-emerald-400">User ${l.user || 'Ẩn danh'}</span>
-                        <span class="text-[10px] text-slate-500">${formatTime(l.createdAt)}</span>
+                        <span class="font-bold text-emerald-400">User ${user}</span>
+                        <span class="text-[10px] text-slate-500">${formatTime(time)}</span>
                     </div>
-                    <p class="text-slate-200 font-medium">${l.message}</p>
-                </div>
-            `).join('');
+                    <p class="text-slate-200 font-medium">${msg}</p>
+                </div>`;
+            }).join('');
         }
 
         function formatTime(timestamp) {
             if (!timestamp) return 'Vừa xong';
+            if (typeof timestamp === 'string') return timestamp;
             const date = timestamp.toDate ? timestamp.toDate() : new Date((timestamp.seconds || Date.now() / 1000) * 1000);
             return date.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
         }
@@ -868,7 +882,7 @@
             return (str || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
         }
 
-        // Member Handlers - Đồng bộ lưu cả 2 kiểu key
+        // Member Handlers
         window.saveMember = async function(e) {
             e.preventDefault();
             const id = document.getElementById('member-id').value;
